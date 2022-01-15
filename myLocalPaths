@@ -1,0 +1,3 @@
+NS3_PATH="/opt/salas/ns-3.34"
+SCRATCH_SUBDIR_NAME="fuentesNN"
+CODE_PATHS="./lib/myPsrLib ./simulateSrc"
