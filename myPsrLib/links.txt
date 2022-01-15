@@ -1,0 +1,2 @@
+https://stackoverflow.com/questions/12304949/how-to-create-a-process-in-c-under-linux
+https://stackoverflow.com/questions/35543906/parallel-simulations-using-ns3-and-stdthread
