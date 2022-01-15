@@ -25,13 +25,15 @@ do
 	cp $CODE_PATH/*.cc $FULL_SCRATCH_PATH
 done
 
-#if [ $1 == "-c" ]
-#then
-#	echo CONARG
-#	cp code/$2/* scratch/practica
-#	./captura.sh "NS_LOG='$NS_LOG' ./waf --run 'practica $3'" &> captura.txt
-#else
-#	echo SINARG
-#	cp code/$1/* scratch/practica
-#	./waf --run "practica $2"
-#fi
+
+# Execute
+cd $NS3_PATH
+
+if [[ $1 == "-c" ]]
+then
+	echo CONARG
+	./captura.sh "NS_LOG='$NS_LOG' ./waf --run '$SCRATCH_SUBDIR_NAME $3'" &> captura.txt
+else
+	echo SINARG
+	./waf --run "$SCRATCH_SUBDIR_NAME"
+fi
