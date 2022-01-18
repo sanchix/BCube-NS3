@@ -31,10 +31,10 @@ cd $NS3_PATH
 if [[ $1 == "-c" ]]
 then
 	echo CONARG
-	./captura.sh "NS_LOG='$NS_LOG' ./waf --run '$SCRATCH_SUBDIR_NAME $3'" &> $OLD_WD/captura.txt
+	./captura.sh "NS_LOG='$NS_LOG' ./waf --run '$SCRATCH_SUBDIR_NAME $2'" &> $OLD_WD/captura.txt
 else
 	echo SINARG
-	./waf --run "$SCRATCH_SUBDIR_NAME"
+	./waf --run "$SCRATCH_SUBDIR_NAME $1"
 fi
 
 mv Trabajo.plt $OLD_WD
