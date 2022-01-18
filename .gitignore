@@ -1,1 +1,5 @@
+# Ignore .plt results
+*.plt
 
+# Each one has its own local paths
+myLocalPaths
