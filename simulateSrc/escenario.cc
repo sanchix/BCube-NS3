@@ -46,17 +46,16 @@ double escenario(StageConfig_t *config){
 	
 	NodeContainer todosNodos = topologiaFisica(config->bCubeLevel, config->nNodosDim);
 	NS_LOG_INFO("Topology generated");
+	NS_LOG_DEBUG("El numero de equipos es: "<< todosNodos.GetN());
 
-	Ptr<Node> aux;
-	Ptr<Ipv4L3Protocol> L_IP;
-
-	for (uint32_t i = 0; i<todosNodos.GetN()-1;i++){
-		aux = todosNodos.Get(i);
-		NS_LOG_INFO("ID: "<<aux->GetId() << "  IP:");
+	for (uint32_t i = 0; i<todosNodos.GetN();i++){
+		Ptr<Node> aux = todosNodos.Get(i);
+		NS_LOG_DEBUG("ID: "<<aux->GetId() << "  IP:");
 		
-		L_IP = aux->GetObject<Ipv4L3Protocol> ();
-		for (uint32_t j=0; j< L_IP->GetNInterfaces()-1 ;j++){
-			NS_LOG_INFO( L_IP->GetAddress (i, 0).GetLocal () );
+		Ptr<Ipv4L3Protocol> L_IP = aux->GetObject<Ipv4L3Protocol> ();
+		NS_LOG_DEBUG("El numero de interfaces es: "<< L_IP->GetNInterfaces());
+		for (uint32_t j=0; j< L_IP->GetNInterfaces() ;j++){
+			NS_LOG_DEBUG( L_IP->GetAddress (j, 0).GetLocal () );
 		}
  
 	}
