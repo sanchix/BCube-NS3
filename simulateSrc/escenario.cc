@@ -39,6 +39,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Escenario");
 
+int coordToIndex(int dimSize, int dim, int coord);
+
 double escenario(StageConfig_t *config){
 	
 	// Eliminar cualquier variable o elemento de red de una simulación anterior.
@@ -52,7 +54,7 @@ double escenario(StageConfig_t *config){
 
 	for (uint32_t i = 0; i<todosNodos.GetN()-1;i++){
 		aux = todosNodos.Get(i);
-		NS_LOG_INFO("ID: "<<aux->GetId() << "  IP:");
+		//NS_LOG_INFO("ID: "<<aux->GetId() << "  IP:");
 		
 		L_IP = aux->GetObject<Ipv4L3Protocol> ();
 		for (uint32_t j=0; j< L_IP->GetNInterfaces()-1 ;j++){
@@ -65,9 +67,10 @@ double escenario(StageConfig_t *config){
 	
 }
 
-NodeContainer topologiaFisica(int nDims, int dimSize){
+NodeContainer topologiaFisica(int bCubeLevel, int dimSize){
 	
-	int numEquipos = pow(dimSize,nDims+1);
+	int nDims = bCubeLevel+1;
+	int numEquipos = pow(dimSize,nDims);
 	NS_LOG_INFO("NumEquipos = " << numEquipos);
 	
 	NodeContainer todosNodos(numEquipos);
@@ -83,7 +86,7 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 	PuenteConfig_t puenteConfig;
 	puenteConfig.regimenBinario = DataRate(0);
 		
-	if (nDims==0){
+	/*if (nDims==1){
 		
 		NS_LOG_INFO("BCUBE 0");
 		NetDeviceContainer nodosLan;
@@ -92,7 +95,7 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 		
 	}
 	
-	else if (nDims==1){
+	else if (nDims==2){
 		
 		NS_LOG_INFO("BCUBE 1");
 		
@@ -131,7 +134,7 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 		
 	}
 
-	else if (nDims==2){
+	else if (nDims==3){
 		
 		NS_LOG_INFO("BCUBE 2");
 		
@@ -151,7 +154,7 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 			NodeContainer column; 
 			NetDeviceContainer nodosLan2;
 			for (int j=0; j<dimSize; j++){
-				column.Add(todosNodos.Get(i%dimSize+(i/dimSize)*(dimSize*dimSize)+j*dimSize);
+				column.Add(todosNodos.Get(i%dimSize+(i/dimSize)*(dimSize*dimSize)+j*dimSize));
 				//column.Add(todosNodos.Get(dimSize*j+i));
 			}
 			PuenteHelper(column, nodosLan2, &puenteConfig);
@@ -164,7 +167,7 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 				spear.Add(todosNodos.Get(dimSize*dimSize*j+i));
 			}
 			PuenteHelper(spear, nodosLan3, &puenteConfig);
-			c_dispositivos.Add(nodosLan);
+			c_dispositivos.Add(nodosLan3);
 		}
 
 		Ipv4AddressHelper h_direcciones (SUBRED, MASCARA);
@@ -172,24 +175,52 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 		Ipv4NixVectorRouting();
 	}
 	
-	/*else if(nDims == 3){
+	else if(nDims == 4){*/
 		
-		NS_LOG_INFO("BCUBE " << nDims);
+		NS_LOG_INFO("BCUBE " << bCubeLevel);
 		
-		// For every one of the nDim-1 fronteer hyperplanes
+		// For every dim
 		for(int i = 0; i < nDims; i++){
+			NS_LOG_INFO("For dim " << i);
 			
-			// For every element in each hyperplane
+			// For every switch
 			for(int j = 0; j < pow(dimSize, nDims-1); j++){
-			
-				NS_LOG_INFO("Index = " << j);
-				NS_LOG_INFO("Coords = " << j*();
+				
+				std::string cstr = "Coords: ";
+				
+				int indexBase = 0;
+				
+				for(int k = 0; k < nDims-1; k++){
+					int c = (j/(int)pow(dimSize,k))%dimSize;
+					indexBase += coordToIndex(dimSize, (k+1+i)%nDims, c);
+					cstr += "\t" + std::to_string(c);
+				}
+				NS_LOG_INFO(cstr + "\tbase: " + std::to_string(indexBase));
+				
+				NodeContainer line;
+				NetDeviceContainer nodosLan;
+				for(int k = 0; k < dimSize; k++){
+					int index = indexBase+coordToIndex(dimSize, i, k);
+					line.Add(todosNodos.Get(index));
+				}
+				NS_LOG_INFO(line.GetN());
+				PuenteHelper(line, nodosLan, &puenteConfig);
+				c_dispositivos.Add(nodosLan);	
 				
 			}
 			
-		}
-	}*/
+		//}
+		
+	}
 		
 	return todosNodos;
 	
+}
+
+int coordToIndex(int dimSize, int dim, int coord){
+	int index = -1;
+	if(coord < dimSize && coord >= 0){
+		index = pow(dimSize, dim)*coord;
+	}
+	return index;
 }
