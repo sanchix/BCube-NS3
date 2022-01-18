@@ -48,6 +48,7 @@ double escenario(StageConfig_t *config){
 	NS_LOG_INFO("Topology generated");
 	NS_LOG_DEBUG("El numero de equipos es: "<< todosNodos.GetN());
 
+/*
 	for (uint32_t i = 0; i<todosNodos.GetN();i++){
 		Ptr<Node> aux = todosNodos.Get(i);
 		NS_LOG_DEBUG("ID: "<<aux->GetId() << "  IP:");
@@ -57,9 +58,8 @@ double escenario(StageConfig_t *config){
 		for (uint32_t j=0; j< L_IP->GetNInterfaces() ;j++){
 			NS_LOG_DEBUG( L_IP->GetAddress (j, 0).GetLocal () );
 		}
- 
 	}
-	
+*/
 	return 1;
 	
 }
@@ -150,7 +150,7 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 			NodeContainer column; 
 			NetDeviceContainer nodosLan2;
 			for (int j=0; j<dimSize; j++){
-				column.Add(todosNodos.Get(i%dimSize+(i/dimSize)*(dimSize*dimSize)+j*dimSize);
+				column.Add(todosNodos.Get(i%dimSize+(i/dimSize)*(dimSize*dimSize)+j*dimSize));
 				//column.Add(todosNodos.Get(dimSize*j+i));
 			}
 			PuenteHelper(column, nodosLan2, &puenteConfig);
@@ -163,12 +163,20 @@ NodeContainer topologiaFisica(int nDims, int dimSize){
 				spear.Add(todosNodos.Get(dimSize*dimSize*j+i));
 			}
 			PuenteHelper(spear, nodosLan3, &puenteConfig);
-			c_dispositivos.Add(nodosLan);
+			c_dispositivos.Add(nodosLan3);
 		}
 
 		Ipv4AddressHelper h_direcciones (SUBRED, MASCARA);
 		Ipv4InterfaceContainer c_interfaces = h_direcciones.Assign (c_dispositivos);
-		Ipv4NixVectorRouting();
+		Ipv4NixVectorRouting IPv4NixVectorRouting = Ipv4NixVectorRouting();
+
+		OutputStreamWrapper Outputwrapper = OutputStreamWrapper("NixVector12.txt",std::ios::out);
+		IPv4NixVectorRouting.PrintRoutingPath(todosNodos.Get(0),todosNodos.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+		IPv4NixVectorRouting.PrintRoutingPath(todosNodos.Get(0),todosNodos.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
+		IPv4NixVectorRouting.PrintRoutingPath(todosNodos.Get(0),todosNodos.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(3, 0).GetLocal(),&Outputwrapper,Time::MS);
+		IPv4NixVectorRouting.PrintRoutingPath(todosNodos.Get(0),todosNodos.Get(1024)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+		IPv4NixVectorRouting.PrintRoutingPath(todosNodos.Get(0),todosNodos.Get(2800)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+
 	}
 	
 	/*else if(nDims == 3){
