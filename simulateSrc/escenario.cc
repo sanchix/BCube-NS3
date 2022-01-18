@@ -51,9 +51,9 @@ double escenario(StageConfig_t *config){
 	
 }
 
-NodeContainer topologiaFisica(int dim, int levels){
+NodeContainer topologiaFisica(int nDims, int dimSize){
 	
-	int numEquipos = pow(levels,dim+1);
+	int numEquipos = pow(dimSize,nDims+1);
 	NS_LOG_INFO("NumEquipos = " << numEquipos);
 	
 	NodeContainer todosNodos(numEquipos);
@@ -69,79 +69,87 @@ NodeContainer topologiaFisica(int dim, int levels){
 	PuenteConfig_t puenteConfig;
 	puenteConfig.regimenBinario = DataRate(0);
 		
-	if (dim==0){
+	if (nDims==0){
+		
 		NS_LOG_INFO("BCUBE 0");
 		NetDeviceContainer nodosLan;
 		PuenteHelper(todosNodos, nodosLan, &puenteConfig);
 		c_dispositivos.Add(nodosLan);
+		
 	}
 	
-	else if (dim==1){
+	else if (nDims==1){
+		
 		NS_LOG_INFO("BCUBE 1");
 		
-		//Primero conectamos horizontalmente
-		for (int i = 0; i < levels; i++){
+		// Para cada elemendo de fila/columna
+		for (int i = 0; i < dimSize; i++){
 			
-			NS_LOG_DEBUG("Connecting " << i << " rows and columns");
+			NS_LOG_DEBUG("Row/column " << i);
 			
-			NodeContainer todosNodosAux;
+			NodeContainer row;
 			NetDeviceContainer nodosLan;
 			
 			NS_LOG_DEBUG("Connecting row " << i);
-			for (int j = 0; j < levels; j++){
-				todosNodosAux.Add(todosNodos.Get(levels*i+j));
+			for (int j = 0; j < dimSize; j++){
+				row.Add(todosNodos.Get(dimSize*i+j));
 			}
 			NS_LOG_DEBUG("Connected row " << i);
 			
-			
-			PuenteHelper(todosNodosAux, nodosLan, &puenteConfig);
+			PuenteHelper(row, nodosLan, &puenteConfig);
 			c_dispositivos.Add(nodosLan);
+				
 		
-		
-			NodeContainer todosNodosAux2;
+			NodeContainer column;
 			NetDeviceContainer nodosLan2;
 			
 			NS_LOG_DEBUG("Connecting column " << i);
-			for (int j = 0; j < levels; j++){
-				NS_LOG_DEBUG("j="<<j<<", nodeID="<<levels*j+i);
-				todosNodosAux2.Add(todosNodos.Get(levels*j+i));
+			for (int j = 0; j < dimSize; j++){
+				NS_LOG_DEBUG("j="<<j<<", nodeID="<<dimSize*j+i);
+				column.Add(todosNodos.Get(dimSize*j+i));
 			}
 			NS_LOG_DEBUG("Connected column " << i);
 						
-			PuenteHelper(todosNodosAux2, nodosLan2, &puenteConfig);
+			PuenteHelper(column, nodosLan2, &puenteConfig);
+			c_dispositivos.Add(nodosLan2);
 			
 		}
 		
 	}
 
-	else if (dim==2){
+	else if (nDims==2){
+		
 		NS_LOG_INFO("BCUBE 2");
-		for (int i=0; i<levels*levels; i++){
+		
+		// Por cada elemento de cara
+		for (int i = 0; i<dimSize*dimSize; i++){
+			
 			//Primero conectamos horizontalmente
-			NodeContainer todosNodosAux; 
+			NodeContainer row; 
 			NetDeviceContainer nodosLan;
-			for (int j=0; j<levels; j++){
-				todosNodosAux.Add(todosNodos.Get(levels*i+j));
+			for (int j=0; j<dimSize; j++){
+				row.Add(todosNodos.Get(dimSize*i+j));
 			}
-			PuenteHelper(todosNodosAux, nodosLan, &puenteConfig);
+			PuenteHelper(row, nodosLan, &puenteConfig);
 			c_dispositivos.Add(nodosLan);	
 			
 			//Conectamos verticalmente
-			NodeContainer todosNodosAux2; 
+			NodeContainer column; 
 			NetDeviceContainer nodosLan2;
-			for (int j=0; j<levels; j++){
-				todosNodosAux2.Add(todosNodos.Get(levels*j+i));
+			for (int j=0; j<dimSize; j++){
+				column.Add(todosNodos.Get(i%dimSize+(i/dimSize)*(dimSize*dimSize)+j*dimSize);
+				//column.Add(todosNodos.Get(dimSize*j+i));
 			}
-			PuenteHelper(todosNodosAux2, nodosLan2, &puenteConfig);
+			PuenteHelper(column, nodosLan2, &puenteConfig);
 			c_dispositivos.Add(nodosLan2);
     	   
 			//Conectamos profundamente
-			NodeContainer todosNodosAux3; 
+			NodeContainer spear; 
 			NetDeviceContainer nodosLan3;
-			for (int j=0; j<levels; j++){
-				todosNodosAux3.Add(todosNodos.Get(levels*levels*j+i));
+			for (int j=0; j<dimSize; j++){
+				spear.Add(todosNodos.Get(dimSize*dimSize*j+i));
 			}
-			PuenteHelper(todosNodosAux3, nodosLan3, &puenteConfig);
+			PuenteHelper(spear, nodosLan3, &puenteConfig);
 			c_dispositivos.Add(nodosLan);
 		}
 
@@ -150,6 +158,24 @@ NodeContainer topologiaFisica(int dim, int levels){
 		Ipv4NixVectorRouting();
 	}
 	
+	/*else if(nDims == 3){
+		
+		NS_LOG_INFO("BCUBE " << nDims);
+		
+		// For every one of the nDim-1 fronteer hyperplanes
+		for(int i = 0; i < nDims; i++){
+			
+			// For every element in each hyperplane
+			for(int j = 0; j < pow(dimSize, nDims-1); j++){
+			
+				NS_LOG_INFO("Index = " << j);
+				NS_LOG_INFO("Coords = " << j*();
+				
+			}
+			
+		}
+	}*/
+		
 	return todosNodos;
 	
 }
