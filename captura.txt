@@ -1,0 +1,11 @@
+++ bash -c 'NS_LOG='\'''\'' ./waf --run '\''fuentes03 '\'''
+Waf: Entering directory `/opt/salas/ns-3.34/build'
+[1948/2030] Compiling scratch/fuentes03/genera_trafico.cc
+../scratch/fuentes03/genera_trafico.cc:10:1: error: "/*" within comment [-Werror=comment]
+   10 | /*
+      |  
+cc1plus: all warnings being treated as errors
+
+Waf: Leaving directory `/opt/salas/ns-3.34/build'
+Build failed
+ -> task in 'fuentes03' failed with exit status 1 (run with -v to display more information)

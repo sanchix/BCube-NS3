@@ -9,7 +9,7 @@
 #include "simulacion.h"
 #include "punto.h"
 #include "tStudent.h"
-#include "escenarioP7.h"
+#include "escenario.h"
 
 
 using namespace ns3;

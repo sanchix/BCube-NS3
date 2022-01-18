@@ -1,11 +1,9 @@
 #!/bin/bash
 
-
-# Init variables
+#Init variables
 . myLocalPaths
 
-FULL_SCRATCH_PATH=$NS3_PATH/scratch/$SCRATCH_SUBDIR_NAME
-
+FULL_SCRATCH_PATH="$NS3_PATH/scratch/$SCRATCH_SUBDIR_NAME"
 
 # Create and prepare ns3 folders
 if [[ ! -d $FULL_SCRATCH_PATH ]]
@@ -27,13 +25,16 @@ done
 
 
 # Execute
+OLD_WD=$PWD
 cd $NS3_PATH
 
 if [[ $1 == "-c" ]]
 then
 	echo CONARG
-	./captura.sh "NS_LOG='$NS_LOG' ./waf --run '$SCRATCH_SUBDIR_NAME $3'" &> captura.txt
+	./captura.sh "NS_LOG='$NS_LOG' ./waf --run '$SCRATCH_SUBDIR_NAME $3'" &> $OLD_WD/captura.txt
 else
 	echo SINARG
 	./waf --run "$SCRATCH_SUBDIR_NAME"
 fi
+
+mv Trabajo.plt $OLD_WD
