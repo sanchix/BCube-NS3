@@ -28,6 +28,8 @@
 #include "ns3/fifo-queue-disc.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
+#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/ipv4-nix-vector-routing.h"
 
 #include "escenario.h"
 #include "puente_helper.h"
@@ -35,9 +37,7 @@
 
 using namespace ns3;
 
-
 NS_LOG_COMPONENT_DEFINE("Escenario");
-
 
 double escenario(StageConfig_t *config){
 	
@@ -59,10 +59,13 @@ NodeContainer topologiaFisica(int dim, int levels){
 	NodeContainer todosNodos(numEquipos);
 	NetDeviceContainer c_dispositivos;
 	
+	Ipv4NixVectorHelper h_Nix_Routing;
+	
 	InternetStackHelper h_pila;
+	h_pila.SetRoutingHelper(h_Nix_Routing);
 	h_pila.SetIpv6StackInstall (false);
 	h_pila.Install (todosNodos);
-	
+
 	PuenteConfig_t puenteConfig;
 	puenteConfig.regimenBinario = DataRate(0);
 		
@@ -143,9 +146,8 @@ NodeContainer topologiaFisica(int dim, int levels){
 		}
 
 		Ipv4AddressHelper h_direcciones (SUBRED, MASCARA);
-		Ipv4InterfaceContainer c_interfaces =
-		h_direcciones.Assign (c_dispositivos);
-	
+		Ipv4InterfaceContainer c_interfaces = h_direcciones.Assign (c_dispositivos);
+		Ipv4NixVectorRouting();
 	}
 	
 	return todosNodos;
