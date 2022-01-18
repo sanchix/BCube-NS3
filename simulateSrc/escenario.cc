@@ -48,21 +48,20 @@ double escenario(StageConfig_t *config){
 	
 	NodeContainer todosNodos = topologiaFisica(config->bCubeLevel, config->nNodosDim);
 	NS_LOG_INFO("Topology generated");
+	NS_LOG_DEBUG("El numero de equipos es: "<< todosNodos.GetN());
 
-	Ptr<Node> aux;
-	Ptr<Ipv4L3Protocol> L_IP;
-
-	for (uint32_t i = 0; i<todosNodos.GetN()-1;i++){
-		aux = todosNodos.Get(i);
-		//NS_LOG_INFO("ID: "<<aux->GetId() << "  IP:");
+/*
+	for (uint32_t i = 0; i<todosNodos.GetN();i++){
+		Ptr<Node> aux = todosNodos.Get(i);
+		NS_LOG_DEBUG("ID: "<<aux->GetId() << "  IP:");
 		
-		L_IP = aux->GetObject<Ipv4L3Protocol> ();
-		for (uint32_t j=0; j< L_IP->GetNInterfaces()-1 ;j++){
-			NS_LOG_INFO( L_IP->GetAddress (i, 0).GetLocal () );
+		Ptr<Ipv4L3Protocol> L_IP = aux->GetObject<Ipv4L3Protocol> ();
+		NS_LOG_DEBUG("El numero de interfaces es: "<< L_IP->GetNInterfaces());
+		for (uint32_t j=0; j< L_IP->GetNInterfaces() ;j++){
+			NS_LOG_DEBUG( L_IP->GetAddress (j, 0).GetLocal () );
 		}
- 
 	}
-	
+*/
 	return 1;
 	
 }
@@ -85,131 +84,39 @@ NodeContainer topologiaFisica(int bCubeLevel, int dimSize){
 
 	PuenteConfig_t puenteConfig;
 	puenteConfig.regimenBinario = DataRate(0);
-		
-	/*if (nDims==1){
-		
-		NS_LOG_INFO("BCUBE 0");
-		NetDeviceContainer nodosLan;
-		PuenteHelper(todosNodos, nodosLan, &puenteConfig);
-		c_dispositivos.Add(nodosLan);
-		
-	}
 	
-	else if (nDims==2){
-		
-		NS_LOG_INFO("BCUBE 1");
-		
-		// Para cada elemendo de fila/columna
-		for (int i = 0; i < dimSize; i++){
 			
-			NS_LOG_DEBUG("Row/column " << i);
+	NS_LOG_INFO("BCUBE " << bCubeLevel);
+		
+	// For every dim
+	for(int i = 0; i < nDims; i++){
+		NS_LOG_INFO("For dim " << i);
+		
+		// For every switch
+		for(int j = 0; j < pow(dimSize, nDims-1); j++){
 			
-			NodeContainer row;
+			std::string cstr = "Coords: ";
+			
+			int indexBase = 0;
+			
+			for(int k = 0; k < nDims-1; k++){
+				int c = (j/(int)pow(dimSize,k))%dimSize;
+				indexBase += coordToIndex(dimSize, (k+1+i)%nDims, c);
+				cstr += "\t" + std::to_string(c);
+			}
+			NS_LOG_INFO(cstr + "\tbase: " + std::to_string(indexBase));
+			
+			NodeContainer line;
 			NetDeviceContainer nodosLan;
-			
-			NS_LOG_DEBUG("Connecting row " << i);
-			for (int j = 0; j < dimSize; j++){
-				row.Add(todosNodos.Get(dimSize*i+j));
+			for(int k = 0; k < dimSize; k++){
+				int index = indexBase+coordToIndex(dimSize, i, k);
+				line.Add(todosNodos.Get(index));
 			}
-			NS_LOG_DEBUG("Connected row " << i);
-			
-			PuenteHelper(row, nodosLan, &puenteConfig);
-			c_dispositivos.Add(nodosLan);
-				
-		
-			NodeContainer column;
-			NetDeviceContainer nodosLan2;
-			
-			NS_LOG_DEBUG("Connecting column " << i);
-			for (int j = 0; j < dimSize; j++){
-				NS_LOG_DEBUG("j="<<j<<", nodeID="<<dimSize*j+i);
-				column.Add(todosNodos.Get(dimSize*j+i));
-			}
-			NS_LOG_DEBUG("Connected column " << i);
-						
-			PuenteHelper(column, nodosLan2, &puenteConfig);
-			c_dispositivos.Add(nodosLan2);
-			
-		}
-		
-	}
-
-	else if (nDims==3){
-		
-		NS_LOG_INFO("BCUBE 2");
-		
-		// Por cada elemento de cara
-		for (int i = 0; i<dimSize*dimSize; i++){
-			
-			//Primero conectamos horizontalmente
-			NodeContainer row; 
-			NetDeviceContainer nodosLan;
-			for (int j=0; j<dimSize; j++){
-				row.Add(todosNodos.Get(dimSize*i+j));
-			}
-			PuenteHelper(row, nodosLan, &puenteConfig);
+			NS_LOG_INFO(line.GetN());
+			PuenteHelper(line, nodosLan, &puenteConfig);
 			c_dispositivos.Add(nodosLan);	
 			
-			//Conectamos verticalmente
-			NodeContainer column; 
-			NetDeviceContainer nodosLan2;
-			for (int j=0; j<dimSize; j++){
-				column.Add(todosNodos.Get(i%dimSize+(i/dimSize)*(dimSize*dimSize)+j*dimSize));
-				//column.Add(todosNodos.Get(dimSize*j+i));
-			}
-			PuenteHelper(column, nodosLan2, &puenteConfig);
-			c_dispositivos.Add(nodosLan2);
-    	   
-			//Conectamos profundamente
-			NodeContainer spear; 
-			NetDeviceContainer nodosLan3;
-			for (int j=0; j<dimSize; j++){
-				spear.Add(todosNodos.Get(dimSize*dimSize*j+i));
-			}
-			PuenteHelper(spear, nodosLan3, &puenteConfig);
-			c_dispositivos.Add(nodosLan3);
 		}
-
-		Ipv4AddressHelper h_direcciones (SUBRED, MASCARA);
-		Ipv4InterfaceContainer c_interfaces = h_direcciones.Assign (c_dispositivos);
-		Ipv4NixVectorRouting();
-	}
-	
-	else if(nDims == 4){*/
-		
-		NS_LOG_INFO("BCUBE " << bCubeLevel);
-		
-		// For every dim
-		for(int i = 0; i < nDims; i++){
-			NS_LOG_INFO("For dim " << i);
-			
-			// For every switch
-			for(int j = 0; j < pow(dimSize, nDims-1); j++){
-				
-				std::string cstr = "Coords: ";
-				
-				int indexBase = 0;
-				
-				for(int k = 0; k < nDims-1; k++){
-					int c = (j/(int)pow(dimSize,k))%dimSize;
-					indexBase += coordToIndex(dimSize, (k+1+i)%nDims, c);
-					cstr += "\t" + std::to_string(c);
-				}
-				NS_LOG_INFO(cstr + "\tbase: " + std::to_string(indexBase));
-				
-				NodeContainer line;
-				NetDeviceContainer nodosLan;
-				for(int k = 0; k < dimSize; k++){
-					int index = indexBase+coordToIndex(dimSize, i, k);
-					line.Add(todosNodos.Get(index));
-				}
-				NS_LOG_INFO(line.GetN());
-				PuenteHelper(line, nodosLan, &puenteConfig);
-				c_dispositivos.Add(nodosLan);	
-				
-			}
-			
-		//}
 		
 	}
 		
