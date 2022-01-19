@@ -1,7 +1,10 @@
 #include "ns3/core-module.h"
 #include "ns3/node-container.h"
-#include "random-variable-stream.h"
+#include "ns3/random-variable-stream.h"
 #include "ns3/on-off-helper.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-l3-protocol.h"
 
 #define PUERTO 9
 #define LIBRE 0
@@ -20,6 +23,7 @@ class Llamada {
  private:
  	NodeContainer TodosNodos;
  	Ptr<ExponentialRandomVariable> Exp_duracion;
+    Ptr<UniformRandomVariable> Uniform_t_inicio;
  	std::vector<int> nodeCalledList;
  	Ptr<UniformRandomVariable> Uniform_equipo_destino;
  	DataRate TasaApp;
