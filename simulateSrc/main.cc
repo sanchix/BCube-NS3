@@ -28,7 +28,7 @@ int main (int argc, char *argv[]){
 	int porcentajeConzianza = 95;
 	int numIter = 1;
 	int bCubeLevel = 1;    // Comproar si está entre 0 y 3
-	int nNodosDim = 3;
+	int nNodosDim = 4;
 	int regBinarioPuentes = 10;
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);

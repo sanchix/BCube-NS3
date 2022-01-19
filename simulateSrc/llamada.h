@@ -24,7 +24,9 @@ class Llamada {
  	NodeContainer TodosNodos;
  	Ptr<ExponentialRandomVariable> Exp_duracion;
     Ptr<UniformRandomVariable> Uniform_t_inicio;
- 	std::vector<int> nodeCalledList;
+    Ptr<ExponentialRandomVariable> Exp_ON;
+    Ptr<ExponentialRandomVariable> Exp_OFF;
+ 	std::vector<int> *nodeCalledList;
  	Ptr<UniformRandomVariable> Uniform_equipo_destino;
  	DataRate TasaApp;
  	uint32_t TamPack;

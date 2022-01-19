@@ -1,11 +1,9 @@
 
 #include "escenario.h"
-
 #include "puente_helper.h"
-
+#include "generaTrafico.h"
 
 using namespace ns3;
-
 
 NS_LOG_COMPONENT_DEFINE("Escenario");
 
@@ -22,8 +20,11 @@ double escenario(StageConfig_t *config){
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
 
 	asignaDirecciones(topology);
+	generaTrafico(topology.nodes);
 	
-	return 1;
+	Simulator::Stop(Seconds(600));
+	Simulator::Run();
+	return 1.0;
 	
 }
 
