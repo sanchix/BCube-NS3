@@ -3,6 +3,7 @@
 
 
 #include "ns3/node-container.h"
+#include "ns3/net-device-container.h"
 
 
 #define SUBRED "10.1.0.0"
@@ -18,7 +19,12 @@ typedef struct{
 	int nNodosDim;
 } StageConfig_t;
 
-NodeContainer topologiaFisica(int dim, int levels);
+typedef struct{
+	NodeContainer nodos;
+	NetDeviceContainer c_dispositivos;
+} topologyElements_t;
+
+void topologiaFisica(int bCubeLevel, int dimSize, topologyElements_t &elements);
 double escenario(StageConfig_t *config);
 
 

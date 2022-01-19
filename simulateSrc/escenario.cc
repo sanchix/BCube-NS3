@@ -24,7 +24,6 @@
 #include "ns3/traffic-control-layer.h"
 #include "ns3/queue.h"
 #include "ns3/csma-net-device.h"
-#include "ns3/net-device-container.h"
 #include "ns3/fifo-queue-disc.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
@@ -40,15 +39,18 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("Escenario");
 
 int coordToIndex(int dimSize, int dim, int coord);
+void asignaDirecciones(topologyElements_t &elements);
 
 double escenario(StageConfig_t *config){
 	
 	// Eliminar cualquier variable o elemento de red de una simulación anterior.
 	Simulator::Destroy();
 	
-	NodeContainer todosNodos = topologiaFisica(config->bCubeLevel, config->nNodosDim);
+	topologyElements_t elements;
+	
+	topologiaFisica(config->bCubeLevel, config->nNodosDim, elements);
 	NS_LOG_INFO("Topology generated");
-	NS_LOG_DEBUG("El numero de equipos es: "<< todosNodos.GetN());
+	NS_LOG_DEBUG("El numero de equipos es: "<< elements.nodos.GetN());
 
 /*
 	for (uint32_t i = 0; i<todosNodos.GetN();i++){
@@ -66,7 +68,29 @@ double escenario(StageConfig_t *config){
 	
 }
 
-NodeContainer topologiaFisica(int bCubeLevel, int dimSize){
+void asignaDirecciones(topologyElements_t &elements){
+	
+	Ipv4NixVectorHelper h_Nix_Routing;
+	
+	InternetStackHelper h_pila;
+	h_pila.SetRoutingHelper(h_Nix_Routing);
+	h_pila.SetIpv6StackInstall (false);
+	h_pila.Install (elements.nodos);
+	
+	Ipv4AddressHelper h_direcciones (SUBRED, MASCARA);
+	Ipv4InterfaceContainer c_interfaces = h_direcciones.Assign (elements.c_dispositivos);
+	Ipv4NixVectorRouting IPv4NixVectorRouting = Ipv4NixVectorRouting();
+
+	OutputStreamWrapper Outputwrapper = OutputStreamWrapper("NixVector12.txt",std::ios::out);
+	IPv4NixVectorRouting.PrintRoutingPath(elements.nodos.Get(0),elements.nodos.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+	IPv4NixVectorRouting.PrintRoutingPath(elements.nodos.Get(0),elements.nodos.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
+	IPv4NixVectorRouting.PrintRoutingPath(elements.nodos.Get(0),elements.nodos.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(3, 0).GetLocal(),&Outputwrapper,Time::MS);
+	IPv4NixVectorRouting.PrintRoutingPath(elements.nodos.Get(0),elements.nodos.Get(1024)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+	IPv4NixVectorRouting.PrintRoutingPath(elements.nodos.Get(0),elements.nodos.Get(2800)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+	
+}
+
+void topologiaFisica(int bCubeLevel, int dimSize, topologyElements_t &elements){
 	
 	int nDims = bCubeLevel+1;
 	int numEquipos = pow(dimSize,nDims);
@@ -74,13 +98,6 @@ NodeContainer topologiaFisica(int bCubeLevel, int dimSize){
 	
 	NodeContainer todosNodos(numEquipos);
 	NetDeviceContainer c_dispositivos;
-	
-	Ipv4NixVectorHelper h_Nix_Routing;
-	
-	InternetStackHelper h_pila;
-	h_pila.SetRoutingHelper(h_Nix_Routing);
-	h_pila.SetIpv6StackInstall (false);
-	h_pila.Install (todosNodos);
 
 	PuenteConfig_t puenteConfig;
 	puenteConfig.regimenBinario = DataRate(0);
@@ -119,8 +136,9 @@ NodeContainer topologiaFisica(int bCubeLevel, int dimSize){
 		}
 		
 	}
-		
-	return todosNodos;
+	
+	elements.nodos = todosNodos;
+	elements.c_dispositivos = c_dispositivos;
 	
 }
 
