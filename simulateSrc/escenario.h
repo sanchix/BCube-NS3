@@ -8,7 +8,6 @@
 
 #define SUBRED "10.1.0.0"
 #define MASCARA "255.255.0.0"
-#define PUERTO 9
 
 
 using namespace ns3;

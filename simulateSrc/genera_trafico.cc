@@ -1,7 +1,11 @@
+
 #include "ns3/core-module.h"
 #include "ns3/node-container.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/udp-client-server-helper.h" 
+#include "ns3/inet-socket-address.h"
+
+#define PUERTO 9
 
 using namespace ns3;
 
@@ -17,48 +21,46 @@ double prob_level2 : probabilidad de que se genere trafico hacia un servidor del
 
 Aclaración: probabilidad de enviar a un nodo arbitrario (1 - prob_level1 + prob_level2)
 */
-void generaTrafico (NodeContainer nodos_BCube, double prob_level1, double prob_level2);
+void generaTrafico (NodeContainer nodos_BCube);
 
-
-void generaTrafico (NodeContainer nodos_BCube, double prob_level1, double prob_level2){
+void generaTrafico (NodeContainer nodos_BCube){
   
   NS_LOG_FUNCTION ("Contenedor con " << nodos_BCube.GetN() << " nodos");
 
-  // Creamos la Aplicacion UdpServer (sumdireo) 
+  // Creamos la Aplicacion UdpServer (sumidero) 
   UdpServerHelper H_ServerUdp (PUERTO); 
-  ApplicationContainer C_App_Sumidero = H_ServerUdp.Install (sumidero);
+  ApplicationContainer C_App_Sumidero = H_ServerUdp.Install (nodos_BCube);
 
-  // Creamos las Aplicaciones ON OFF (fuente)
-  Time TiempoTotalON = Seconds(75) ;
+  // Parametros de las Aplicaciones On Off
   DataRate TasaApp("32kb/s");
-  Double tiempoAppOn = 0.350;
-  Double tiempoAppOff = 0.650;
-  Ptr<ExponentialRandomVariable> x1 = CreateObject<ExponentialRandomVariable> ();
-  x1->SetAttribute ("Mean", DoubleValue (tiempoAppOn));
-  Ptr<ExponentialRandomVariable> x2 = CreateObject<ExponentialRandomVariable> ();
-  x2->SetAttribute ("Mean", DoubleValue (tiempoAppOff));
+  uint32_t TamPaqFuente = 92;
+  double tiempoAppOn = 0.350;
+  double tiempoAppOff = 0.650;
+  Ptr<ExponentialRandomVariable> Exp_ON = CreateObject<ExponentialRandomVariable> ();
+  Ptr<ExponentialRandomVariable> Exp_OFF = CreateObject<ExponentialRandomVariable> ();
+  Exp_ON->SetAttribute ("Mean", DoubleValue (tiempoAppOn));
+  Exp_OFF->SetAttribute ("Mean", DoubleValue (tiempoAppOff));
+
 
   NS_LOG_DEBUG("Datos Aplicación ON OFF: ");
-  NS_LOG_DEBUG("Tiempo que durarán las llamadas: "<<TiempoTotalON);  
   NS_LOG_DEBUG("Velocidad de generación de la App: "<<TasaApp);
 
-  OnOffHelper H_ClientOnOff ("ns3::UdpSocketFactory",InetSocketAddress(C_Interfaces.GetAddress (0), PUERTO));
-  H_ClientOnOff.SetConstantRate(TasaApp,TamPaqFuente);
-  H_ClientOnOff->SetAttribute("OnTime",PointerValue(x1));
-  H_ClientOnOff->SetAttribute("OffTime",PointerValue(x2));
-  H_ClientOnOff->SetAttribute("StopTime",TimeValue(TiempoTotalON));
+  // Creamos las Aplicaciones ON OFF (fuente)
+  Config::SetDefault ("ns3::OnOffHelper::OnTime",PointerValue(Exp_ON));
+  Config::SetDefault ("ns3::OnOffHelper::OffTime",PointerValue(Exp_OFF));
 
-  ApplicationContainer C_App_Fuente = H_ClientOnOff.Install (C_NodosFuente);
-  
-  /*
-  //Varias fuentes en un mismo nodo
-  std::vector <ApplicationContainer> Contenedores_App_Fuentes;
-  ApplicationContainer C_Todas_App_Fuente;
-  for (i=0;i<NumFuentes;i++){
-    ApplicationContainer C_App_Fuente = H_ClientOnOff.Install (C_NodosFuente);
-    C_Todas_App_Fuente.Add(C_App_Fuente);
-    Contenedores_App_Fuentes.push_back(C_App_Fuente);
-  }
-  */
+  ApplicationContainer C_App_Fuente;
+  Time TiempoLlamada = Seconds(75);
+  NodeContainer Nodo_Origen;
+  NodeContainer Nodo_Destino;
+
+  // En bucle de manera aleatoria
+  //TiempoLlamada = 
+  //Nodo_Origen.Add()
+  //Nodo_Destino.Add()
+ 
+  OnOffHelper H_ClientOnOff ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Destino.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
+  H_ClientOnOff.SetConstantRate(TasaApp,TamPaqFuente);
+  ApplicationContainer.Add(H_ClientOnOff.Install (Nodo_Origen));
   
 }
