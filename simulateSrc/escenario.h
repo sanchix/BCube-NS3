@@ -4,6 +4,13 @@
 
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
+#include "ns3/node.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-interface-container.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/ipv4-nix-vector-routing.h"
 
 
 #define SUBRED "10.1.0.0"
@@ -20,12 +27,18 @@ typedef struct{
 } StageConfig_t;
 
 typedef struct{
-	NodeContainer nodos;
-	NetDeviceContainer c_dispositivos;
-} topologyElements_t;
+	NodeContainer nodes;
+	NetDeviceContainer devices;
+} TopologyElements_t;
 
-void topologiaFisica(int bCubeLevel, int dimSize, topologyElements_t &elements);
+
 double escenario(StageConfig_t *config);
+
+void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology);
+
+void asignaDirecciones(TopologyElements_t &elements);
+
+int coordToIndex(int dimSize, int dim, int coord);
 
 
 #endif
