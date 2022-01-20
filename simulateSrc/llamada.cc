@@ -42,6 +42,13 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 	Uniform_equipo_destino->SetAttribute ("Min", DoubleValue (0.0));
 	Uniform_equipo_destino->SetAttribute ("Max", DoubleValue (double(TodosNodos.GetN()-1)));
 
+	// Instalamos aplicaciones paradas
+	OnOffHelper H_ClientOnOff ("ns3::UdpSocketFactory",InetSocketAddress("10.1.1.1", PUERTO));
+	H_ClientOnOff.SetConstantRate(TasaApp,TamPack);
+	H_ClientOnOff.Install (TodosNodos);
+	H_ClientOnOff.SetAttribute("OnTime",PointerValue(Exp_0));
+	H_ClientOnOff.SetAttribute("OffTime",PointerValue(Exp_1));
+
 	Time t_inicio;
 	for(uint32_t i = 0; i<TodosNodos.GetN(); i++){
 		t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));	
@@ -98,28 +105,22 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		nNodesInCall += 2;
         
         // CREAR APLICACIONES FUENTES
-		NodeContainer Nodo_Origen;
-		NodeContainer Nodo_Destino;
+		Ptr<Node> nodo_destino = TodosNodos.Get(id_destino);
+		Ptr<OnOffApplication> AppOrigen= nodo_origen->GetApplication(1)->GetObject<OnOffApplication>();
+		Ptr<OnOffApplication> AppDestino= nodo_destino->GetApplication(1)->GetObject<OnOffApplication>();
 
-		Nodo_Origen.Add(nodo_origen);
-		Nodo_Destino.Add(TodosNodos.Get(id_destino));
-		
 		Time t_fin = Seconds(Exp_duracion->GetValue());
 		NS_LOG_DEBUG("El tiempo de finalizacíon de la llamada es :" << t_fin);
 
-		OnOffHelper H_ClientOnOff_origen ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Destino.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
-		H_ClientOnOff_origen.SetConstantRate(TasaApp,TamPack);
-		H_ClientOnOff_origen.Install (Nodo_Origen);
-		H_ClientOnOff_origen.SetAttribute("OnTime",PointerValue(Exp_ON));
-  		H_ClientOnOff_origen.SetAttribute("OffTime",PointerValue(Exp_OFF));
-        Simulator::Schedule(t_fin, &Llamada::Hang,this, Nodo_Origen.Get(0), Nodo_Destino.Get(0));
+		AppOrigen->SetAttribute("Remote",AddressValue( InetSocketAddress(nodo_destino->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO) ));
+		AppOrigen->SetAttribute("OnTime",PointerValue(Exp_ON));
+  		AppOrigen->SetAttribute("OffTime",PointerValue(Exp_OFF));
         
-        OnOffHelper H_ClientOnOff_destino ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Origen.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
-		H_ClientOnOff_destino.SetConstantRate(TasaApp,TamPack);
-		H_ClientOnOff_destino.Install (Nodo_Destino);
-		H_ClientOnOff_destino.SetAttribute("OnTime",PointerValue(Exp_ON));
-		H_ClientOnOff_destino.SetAttribute("OffTime",PointerValue(Exp_OFF));
+		AppDestino->SetAttribute("Remote",AddressValue( InetSocketAddress(nodo_origen->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO) ));
+		AppDestino->SetAttribute("OnTime",PointerValue(Exp_ON));
+		AppDestino->SetAttribute("OffTime",PointerValue(Exp_OFF));
         
+        Simulator::Schedule(t_fin, &Llamada::Hang,this, nodo_origen, nodo_destino);
     }
 }
 
@@ -131,22 +132,13 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 	NS_LOG_FUNCTION("HANG - El id del nodo llamado: "<< id_destino);
 
     // CERRAR APLICACIONES
-    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
-    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
-    
-    //ObjectDeleter::Delete(GetPointer(nodo_origen->GetApplication(1)->GetObject<Object>()));
-    //ObjectDeleter::Delete(GetPointer(nodo_destino->GetApplication(1)->GetObject<Object>()));
-    //nodo_origen->GetApplication(1)->Dispose();
-    //nodo_destino->GetApplication(1)->Dispose();
-    //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_origen->GetApplication(1)));
-    //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_destino->GetApplication(1)));
     
     //Cambiamos los parametros de la aplicacion para que no mande mas trafico...
-    nodo_origen->GetApplication(1)->SetAttribute("OnTime",PointerValue(Exp_0));
-    nodo_destino->GetApplication(1)->SetAttribute("OffTime",PointerValue(Exp_1));
+    nodo_origen->GetApplication(1)->GetObject<OnOffApplication>()->SetAttribute("OnTime",PointerValue(Exp_0));
+    nodo_destino->GetApplication(1)->GetObject<OnOffApplication>()->SetAttribute("OffTime",PointerValue(Exp_1));
 
-    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
-    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
+    NS_LOG_DEBUG("HANG - Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
+    NS_LOG_DEBUG("HANG - Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
 
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
