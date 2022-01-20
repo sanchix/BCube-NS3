@@ -2,7 +2,7 @@
 #include "generaTrafico.h"
 NS_LOG_COMPONENT_DEFINE ("Genera_Trafico");
 
-void generaTrafico (NodeContainer nodos_BCube){
+Llamada *generaTrafico (NodeContainer nodos_BCube){
   
   NS_LOG_FUNCTION ("Contenedor con " << nodos_BCube.GetN() << " nodos");
 
@@ -12,5 +12,5 @@ void generaTrafico (NodeContainer nodos_BCube){
 
   // Creamos las llamadas
   NS_LOG_DEBUG("Llamamos a llamadas");
-  Llamada(nodos_BCube,60.0, 300.0);
+  return new Llamada(nodos_BCube,60.0, 300.0);
 }

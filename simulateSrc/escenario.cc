@@ -20,9 +20,10 @@ double escenario(StageConfig_t *config){
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
 
 	asignaDirecciones(topology);
-	generaTrafico(topology.nodes);
+	Llamada *llamada = generaTrafico(topology.nodes);
+	llamada = llamada;
 	
-	Simulator::Stop(Seconds(600));
+	Simulator::Stop(Seconds(300));
 	Simulator::Run();
 	return 1.0;
 	

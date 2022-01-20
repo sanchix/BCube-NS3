@@ -4,6 +4,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Llamada");
 
+
 Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 	
 	NS_LOG_FUNCTION("Entramos en el constructor Llamada: ");
@@ -22,10 +23,8 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 
 	TodosNodos = nodos;
 	nodeCalledList = new std::vector<int> (TodosNodos.GetN(),int(LIBRE));
-
-	for (int j = 0; j<10;j++){
-		NS_LOG_DEBUG("El valor del estado del nodo "<<j<<" es "<< nodeCalledList->at(j));
-	}
+	nNodesInCall = 0;
+	
 	Uniform_t_inicio = CreateObject<UniformRandomVariable> ();
 	Uniform_t_inicio->SetAttribute ("Min", DoubleValue (0.0));
 	Uniform_t_inicio->SetAttribute ("Max", DoubleValue (max_t_inicio));
@@ -37,15 +36,14 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 	Uniform_equipo_destino->SetAttribute ("Min", DoubleValue (0.0));
 	Uniform_equipo_destino->SetAttribute ("Max", DoubleValue (double(TodosNodos.GetN()-1)));
 
-	for (int j = 0; j<10;j++){
-		NS_LOG_DEBUG("El valor del estado del nodo "<<j<<" es "<< nodeCalledList->at(j));
-	}
-
 	Time t_inicio;
 	for(uint32_t i = 0; i<TodosNodos.GetN(); i++){
 		t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));	
         Simulator::Schedule(t_inicio, &Llamada::Call, this, TodosNodos.Get(i));
 	}
+	
+	NS_LOG_INFO("Tam pack: " << TamPack);
+	
 }
 
 void Llamada::Call(Ptr<Node> nodo_origen){
@@ -53,26 +51,45 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 	NS_LOG_FUNCTION("CALL - El id del nodo llamante: "<< nodo_origen->GetId());
 	NS_LOG_FUNCTION("El estado del nodo es: "<<nodeCalledList->at(nodo_origen->GetId()));
 
-	for (int j = 0; j<10;j++){
-		NS_LOG_DEBUG("El valor del estado del nodo "<<j<<" es "<< nodeCalledList->at(j));
+	int i = 0;
+	for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
+		NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
+		i++;
 	}
+	NS_LOG_INFO("nNodesInCall: " << nNodesInCall);
 
     if(nodeCalledList->at(nodo_origen->GetId()) != LIBRE){
         nodeCalledList->at(nodo_origen->GetId()) = IMPACIENTE;
-
+		int i = 0;
+		for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
+			NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
+			i++;
+		}
     }
     else{
-    	uint32_t id_destino;
-        do{
-            id_destino = Uniform_equipo_destino->GetInteger();
-            NS_LOG_DEBUG("El id del nodo destino buscado: " << id_destino);
-        }
-        while(nodeCalledList->at(id_destino) != LIBRE);
+    	uint32_t id_destino = 0;
+		Uniform_equipo_destino->SetAttribute("Max", DoubleValue((double)(TodosNodos.GetN()-2-nNodesInCall)));
+		uint32_t id_destino_libre = Uniform_equipo_destino->GetInteger();
+		// id_destino_libre = 3
+		//                |
+		// OOXOOOXOOXOOOOOXO
+		// index -> 3
+		NS_LOG_DEBUG("El id del nodo destino libre: " << id_destino_libre);
+		uint32_t index = 0;
+        while(index <= id_destino_libre){
+			while(nodeCalledList->at(id_destino) != LIBRE || id_destino == nodo_origen->GetId()){
+				id_destino++;
+			}
+			id_destino++;
+			index++;
+		}
+		id_destino--;
 
         NS_LOG_DEBUG("El id del nodo destino: " << id_destino);
 
         nodeCalledList->at(nodo_origen->GetId()) = OCUPADO;
         nodeCalledList->at(id_destino) = OCUPADO;
+		nNodesInCall += 2;
         
         // CREAR APLICACIONES FUENTES
 		NodeContainer Nodo_Origen;
@@ -81,7 +98,7 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		Nodo_Origen.Add(nodo_origen);
 		Nodo_Destino.Add(TodosNodos.Get(id_destino));
 		
-		Time t_fin = Simulator::Now()+Seconds(Exp_duracion->GetValue());
+		Time t_fin = Seconds(Exp_duracion->GetValue());
 		NS_LOG_DEBUG("El tiempo de finalizacíon de la llamada es :" << t_fin);
 
 		OnOffHelper H_ClientOnOff_origen ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Destino.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
@@ -115,14 +132,16 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
-    Time t_inicio = Simulator::Now() + Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
+    Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
     Simulator::Schedule(t_inicio, &Llamada::Call,this, nodo_origen);
     
     // Nueva llamada del destino (si la quiere)
     if(nodeCalledList->at(id_destino) == IMPACIENTE){
-
-        nodeCalledList->at(id_destino) = LIBRE;
-        Simulator::Schedule(Simulator::Now(), &Llamada::Call,this, nodo_destino);
+		NS_LOG_INFO("Era impaciente");
+        Simulator::Schedule(Seconds(0), &Llamada::Call,this, nodo_destino);
     }
+	nodeCalledList->at(id_destino) = LIBRE;
+	
+	nNodesInCall -= 2;
 
 }

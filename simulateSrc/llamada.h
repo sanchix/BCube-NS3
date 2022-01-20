@@ -27,6 +27,7 @@ class Llamada {
     Ptr<ExponentialRandomVariable> Exp_ON;
     Ptr<ExponentialRandomVariable> Exp_OFF;
  	std::vector<int> *nodeCalledList;
+	int nNodesInCall;
  	Ptr<UniformRandomVariable> Uniform_equipo_destino;
  	DataRate TasaApp;
  	uint32_t TamPack;

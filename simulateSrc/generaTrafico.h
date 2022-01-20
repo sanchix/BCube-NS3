@@ -18,6 +18,6 @@ Función que instalará en los nodos del contenedor los equipos necesarios los c
 Parámetros:
 NodeContainer nodos_BCube : contenedor con todos los nodos BCube dentro.
 */
-void generaTrafico (NodeContainer nodos_BCube);
+Llamada *generaTrafico (NodeContainer nodos_BCube);
 
 #endif
