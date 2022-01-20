@@ -131,8 +131,10 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 	NS_LOG_FUNCTION("HANG - El id del nodo llamado: "<< id_destino);
 
     // CERRAR APLICACIONES
-    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
-    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
+    int numAppOrig = nodo_origen->GetNApplications();
+    int numAppDestino = nodo_destino->GetNApplications();
+    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del origen: "<< numAppOrig);
+    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del destino: "<< numAppDestino);
     
     //ObjectDeleter::Delete(GetPointer(nodo_origen->GetApplication(1)->GetObject<Object>()));
     //ObjectDeleter::Delete(GetPointer(nodo_destino->GetApplication(1)->GetObject<Object>()));
@@ -142,11 +144,11 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
     //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_destino->GetApplication(1)));
     
     //Cambiamos los parametros de la aplicacion para que no mande mas trafico...
-    nodo_origen->GetApplication(1)->SetAttribute("OnTime",PointerValue(Exp_0));
-    nodo_destino->GetApplication(1)->SetAttribute("OffTime",PointerValue(Exp_1));
-
-    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
-    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
+    nodo_origen->GetApplication(numAppOrig-1)->SetAttribute("OnTime",PointerValue(Exp_0));
+   	nodo_destino->GetApplication(numAppDestino-1)->SetAttribute("OffTime",PointerValue(Exp_1));
+   	
+    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del origen: "<< numAppOrig);
+    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del destino: "<< numAppDestino);
 
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
