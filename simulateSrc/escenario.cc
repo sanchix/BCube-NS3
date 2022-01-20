@@ -25,6 +25,10 @@ double escenario(StageConfig_t *config){
 	
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
+
+	for (uint32_t j = 0; j<topology.nodes.GetN();j++){
+		NS_LOG_INFO("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
+	}
 	return 1.0;
 	
 }
