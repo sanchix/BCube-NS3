@@ -2,6 +2,7 @@
 #include "escenario.h"
 #include "puente_helper.h"
 #include "generaTrafico.h"
+#include "observador.h"
 
 using namespace ns3;
 
@@ -23,8 +24,13 @@ double escenario(StageConfig_t *config){
 	Llamada *llamada = generaTrafico(topology.nodes);
 	llamada = llamada;
 	
+	Observador observador = Observador(topology.nodes.Get(5)->GetApplication(0)->GetObject<UdpServer>());
+
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
+	
+	NS_LOG_INFO("El nodo "<<6<< " ha recibido "<< observador.TotalPaquetes() <<" paquetes");
+
 	return 1.0;
 	
 }
