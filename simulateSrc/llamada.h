@@ -6,6 +6,7 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/default-deleter.h"
+#include "AppOnOff.h"
 
 #define PUERTO 9
 #define LIBRE 0
@@ -20,6 +21,7 @@ class Llamada {
  	Llamada(NodeContainer nodos, double duracion, double max_t_inicio);
  	void Call(Ptr<Node> nodo_origen);
  	void Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino);
+  // AppOnOff GetObserver ();
 
  private:
  	NodeContainer TodosNodos;
@@ -30,8 +32,10 @@ class Llamada {
    Ptr<ConstantRandomVariable> Exp_0;
    Ptr<ConstantRandomVariable> Exp_1;
  	std::vector<int> *nodeCalledList;
+  //AppOnOff obs_OnOff;
+  //    int obs_creado = 0;
 	int nNodesInCall;
  	Ptr<UniformRandomVariable> Uniform_equipo_destino;
  	DataRate TasaApp;
  	uint32_t TamPack;
-};
+};     
