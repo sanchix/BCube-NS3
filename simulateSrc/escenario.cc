@@ -3,7 +3,7 @@
 #include "puente_helper.h"
 #include "generaTrafico.h"
 #include "observador.h"
-
+#include "AppOnOff.h"
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Escenario");
@@ -26,6 +26,12 @@ double escenario(StageConfig_t *config){
 	
 	Observador observador = Observador(topology.nodes.Get(5)->GetApplication(0)->GetObject<UdpServer>());
 
+	ApplicationContainer C_AppONOFF;
+	for (uint32_t j = 0; j<topology.nodes.GetN();j++){
+		C_AppONOFF.Add(topology.nodes.Get(j)->GetApplication(1));
+	}
+	AppOnOff observadorApp = AppOnOff(C_AppONOFF);
+
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
 	
@@ -34,6 +40,8 @@ double escenario(StageConfig_t *config){
 	for (uint32_t j = 0; j<topology.nodes.GetN();j++){
 		NS_LOG_INFO("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
+	
+	NS_LOG_INFO("Las aplicaciones han enviado "<< observadorApp.getNumeroTX() <<" paquetes");
 
 	return 1.0;
 	

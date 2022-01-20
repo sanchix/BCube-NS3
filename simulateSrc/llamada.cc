@@ -42,15 +42,16 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 	Uniform_equipo_destino->SetAttribute ("Min", DoubleValue (0.0));
 	Uniform_equipo_destino->SetAttribute ("Max", DoubleValue (double(TodosNodos.GetN()-1)));
 
-	// Instalamos aplicaciones paradas
-	OnOffHelper H_ClientOnOff ("ns3::UdpSocketFactory",InetSocketAddress("10.1.1.1", PUERTO));
-	H_ClientOnOff.SetConstantRate(TasaApp,TamPack);
-	H_ClientOnOff.Install (TodosNodos);
-	H_ClientOnOff.SetAttribute("OnTime",PointerValue(Exp_0));
-	H_ClientOnOff.SetAttribute("OffTime",PointerValue(Exp_1));
-
 	Time t_inicio;
 	for(uint32_t i = 0; i<TodosNodos.GetN(); i++){
+		Ptr<OnOffApplication> AppOnOff = CreateObject<OnOffApplication>();
+		AppOnOff->SetAttribute("DataRate",DataRateValue(TasaApp));
+		AppOnOff->SetAttribute("PacketSize",UintegerValue(TamPack));
+		AppOnOff->SetAttribute("OnTime",PointerValue(Exp_0));
+		AppOnOff->SetAttribute("OffTime",PointerValue(Exp_1));
+		AppOnOff->SetAttribute("Remote",AddressValue(InetSocketAddress("10.1.0.1", PUERTO)));
+		TodosNodos.Get(i)->AddApplication(AppOnOff);
+
 		t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));	
         Simulator::Schedule(t_inicio, &Llamada::Call, this, TodosNodos.Get(i));
 	}
@@ -120,6 +121,14 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		AppDestino->SetAttribute("OnTime",PointerValue(Exp_ON));
 		AppDestino->SetAttribute("OffTime",PointerValue(Exp_OFF));
         
+        AddressValue direccionOrigen;
+        AppOrigen->GetAttribute("Remote",direccionOrigen);
+		NS_LOG_DEBUG("Dirección del nodo origen :"<< InetSocketAddress::ConvertFrom(direccionOrigen.Get()).GetIpv4());
+
+        AddressValue direccionDestino;
+        AppDestino->GetAttribute("Remote",direccionDestino);
+		NS_LOG_DEBUG("Dirección del nodo destino :"<< InetSocketAddress::ConvertFrom(direccionDestino.Get()).GetIpv4());
+
         Simulator::Schedule(t_fin, &Llamada::Hang,this, nodo_origen, nodo_destino);
     }
 }
