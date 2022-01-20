@@ -31,6 +31,10 @@ double escenario(StageConfig_t *config){
 	
 	NS_LOG_INFO("El nodo "<<6<< " ha recibido "<< observador.TotalPaquetes() <<" paquetes");
 
+	for (uint32_t j = 0; j<topology.nodes.GetN();j++){
+		NS_LOG_INFO("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
+	}
+
 	return 1.0;
 	
 }
