@@ -5,6 +5,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-l3-protocol.h"
+#include "ns3/default-deleter.h"
 
 #define PUERTO 9
 #define LIBRE 0
@@ -23,9 +24,11 @@ class Llamada {
  private:
  	NodeContainer TodosNodos;
  	Ptr<ExponentialRandomVariable> Exp_duracion;
-    Ptr<UniformRandomVariable> Uniform_t_inicio;
-    Ptr<ExponentialRandomVariable> Exp_ON;
-    Ptr<ExponentialRandomVariable> Exp_OFF;
+   Ptr<UniformRandomVariable> Uniform_t_inicio;
+   Ptr<ExponentialRandomVariable> Exp_ON;
+   Ptr<ExponentialRandomVariable> Exp_OFF;
+   Ptr<ConstantRandomVariable> Exp_0;
+   Ptr<ConstantRandomVariable> Exp_1;
  	std::vector<int> *nodeCalledList;
 	int nNodesInCall;
  	Ptr<UniformRandomVariable> Uniform_equipo_destino;

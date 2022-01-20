@@ -21,6 +21,12 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 	Exp_ON->SetAttribute ("Mean", DoubleValue (tiempoAppOn));
 	Exp_OFF->SetAttribute ("Mean", DoubleValue (tiempoAppOff));
 
+	Exp_0 = CreateObject<ConstantRandomVariable> ();
+	Exp_1 = CreateObject<ConstantRandomVariable> ();
+	Exp_0->SetAttribute ("Constant", DoubleValue (0.0));
+	Exp_1->SetAttribute ("Constant", DoubleValue (1.0));
+
+
 	TodosNodos = nodos;
 	nodeCalledList = new std::vector<int> (TodosNodos.GetN(),int(LIBRE));
 	nNodesInCall = 0;
@@ -125,10 +131,22 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 	NS_LOG_FUNCTION("HANG - El id del nodo llamado: "<< id_destino);
 
     // CERRAR APLICACIONES
-    nodo_origen->GetApplication(1)->Dispose();
-    nodo_destino->GetApplication(1)->Dispose();
-    NS_LOG_DEBUG("Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
-    NS_LOG_DEBUG("Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
+    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
+    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
+    
+    //ObjectDeleter::Delete(GetPointer(nodo_origen->GetApplication(1)->GetObject<Object>()));
+    //ObjectDeleter::Delete(GetPointer(nodo_destino->GetApplication(1)->GetObject<Object>()));
+    //nodo_origen->GetApplication(1)->Dispose();
+    //nodo_destino->GetApplication(1)->Dispose();
+    //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_origen->GetApplication(1)));
+    //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_destino->GetApplication(1)));
+    
+    //Cambiamos los parametros de la aplicacion para que no mande mas trafico...
+    nodo_origen->GetApplication(1)->SetAttribute("OnTime",PointerValue(Exp_0));
+    nodo_destino->GetApplication(1)->SetAttribute("OffTime",PointerValue(Exp_1));
+
+    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del origen: "<< nodo_origen->GetNApplications());
+    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del destino: "<< nodo_destino->GetNApplications());
 
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
