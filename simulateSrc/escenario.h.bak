@@ -14,11 +14,14 @@
 #include "ns3/ipv4-nix-vector-helper.h"
 #include "ns3/ipv4-nix-vector-routing.h"
 
+#include "retardo.h"
 #include "puente_helper.h"
 #include "generaTrafico.h"
 
 #define SUBRED "10.1.0.0"
 #define MASCARA "255.255.0.0"
+
+#define STOPTIME 300
 
 
 using namespace ns3;
@@ -38,7 +41,7 @@ typedef struct{
 
 double escenario(StageConfig_t *config);
 
-void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology);
+void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology, PuenteConfig_t *puenteConfig);
 
 void asignaDirecciones(TopologyElements_t &elements);
 

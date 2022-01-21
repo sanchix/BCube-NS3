@@ -21,6 +21,8 @@
 #define SUBRED "10.1.0.0"
 #define MASCARA "255.255.0.0"
 
+#define STOPTIME 140
+
 
 using namespace ns3;
 
