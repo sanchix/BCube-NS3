@@ -1,9 +1,9 @@
 
 #include "escenario.h"
-#include "puente_helper.h"
-#include "generaTrafico.h"
+
 
 using namespace ns3;
+
 
 NS_LOG_COMPONENT_DEFINE("Escenario");
 
@@ -29,7 +29,7 @@ double escenario(StageConfig_t *config){
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
 
-	for (uint32_t j = 0; j<100;j++){
+	for (int j = 0; j < config->nNodos;j++){
 		NS_LOG_DEBUG("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
 	//NS_LOG_DEBUG ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());

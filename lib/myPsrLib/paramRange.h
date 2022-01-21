@@ -2,7 +2,12 @@
 #define paramRange_h
 
 
+#include <math.h>
+
+#include "ns3/log.h"
 #include "ns3/nstime.h"
+#include "ns3/data-rate.h"
+
 
 
 using namespace ns3;
@@ -23,8 +28,8 @@ class ParamRange{
 	private:
 		T initialValue;
 		T * _param;
-		int index;
-		int _indexLimit;
+		uint64_t index;
+		uint64_t _indexLimit;
 		ProgressionType_T _progressionType;
 		bool definedProgressionRate = false;
 		double geometricProgressionRate;

@@ -14,6 +14,8 @@
 #include "ns3/ipv4-nix-vector-helper.h"
 #include "ns3/ipv4-nix-vector-routing.h"
 
+#include "puente_helper.h"
+#include "generaTrafico.h"
 
 #define SUBRED "10.1.0.0"
 #define MASCARA "255.255.0.0"
@@ -25,6 +27,7 @@ using namespace ns3;
 typedef struct{
 	int bCubeLevel;
 	int nNodos;
+	PuenteConfig_t puenteConfig;
 } StageConfig_t;
 
 typedef struct{

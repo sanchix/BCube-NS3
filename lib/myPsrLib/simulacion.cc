@@ -141,8 +141,12 @@ template Gnuplot2dDataset curva<StageConfig_t, Time>(StageConfig_t * scenaryPara
 
 template Gnuplot2dDataset curva<StageConfig_t, double>(StageConfig_t * scenaryParams, string curveName, ParamRange<double> variableParam, int numIter, int porcentajeConzianza, double (*escenario)(StageConfig_t * scenaryParams));
 
+template Gnuplot2dDataset curva<StageConfig_t, DataRate>(StageConfig_t * scenaryParams, string curveName, ParamRange<DataRate> variableParam, int numIter, int porcentajeConzianza, double (*escenario)(StageConfig_t * scenaryParams));
+
 template Gnuplot grafica<StageConfig_t, double, Time>(StageConfig_t * scenaryParams, TitulosGrafica_t titulos, ParamRange<double> curveParam, ParamRange<Time> pointParam, int numIter, int porcentajeConzianza, double (*escenario)(StageConfig_t * scenaryParams));
 
 template Gnuplot grafica<StageConfig_t, int, Time>(StageConfig_t * scenaryParams, TitulosGrafica_t titulos, ParamRange<int> curveParam, ParamRange<Time> pointParam, int numIter, int porcentajeConzianza, double (*escenario)(StageConfig_t * scenaryParams));
 
 template Gnuplot grafica<StageConfig_t, int, int>(StageConfig_t * scenaryParams, TitulosGrafica_t titulos, ParamRange<int> curveParam, ParamRange<int> pointParam, int numIter, int porcentajeConzianza, double (*escenario)(StageConfig_t * scenaryParams));
+
+template Gnuplot grafica<StageConfig_t, int, DataRate>(StageConfig_t * scenaryParams, TitulosGrafica_t titulos, ParamRange<int> curveParam, ParamRange<DataRate> pointParam, int numIter, int porcentajeConzianza, double (*escenario)(StageConfig_t * scenaryParams));

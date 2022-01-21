@@ -57,7 +57,9 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 	
 	NS_LOG_FUNCTION("CALL - El id del nodo llamante: "<< nodo_origen->GetId());
 	NS_LOG_DEBUG("El estado del nodo es: "<<nodeCalledList->at(nodo_origen->GetId()));
-	
+
+	uint32_t id_destino = 0;
+	int nodosLibres = TodosNodos.GetN()-1-nNodesInCall;	
 
 	// Trazas
 	if (nodo_origen->GetNApplications() > 1){
@@ -65,8 +67,6 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		nodo_origen->GetApplication(nodo_origen->GetNApplications() - 1)->GetAttribute("StopTime", t_parada);
 		NS_LOG_DEBUG ("Valor del tiempo de parada del nodo " << nodo_origen->GetId() << ": "<< t_parada.Get());
 	}	
-	
-	// Trazas
 	//int i = 0;
 	//for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
 	//	NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
@@ -74,9 +74,10 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 	//}
 	NS_LOG_DEBUG("nNodesInCall: " << nNodesInCall);
 
+
+	// Si está ocupado -> impaciente
     if(nodeCalledList->at(nodo_origen->GetId()) != LIBRE){
         nodeCalledList->at(nodo_origen->GetId()) = IMPACIENTE;
-
         // Trazas
 		//int i = 0;
 		//for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
@@ -84,11 +85,18 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		//	i++;
 		//}
     }
-    else{
-    	uint32_t id_destino = 0;
-		Uniform_equipo_destino->SetAttribute("Max", DoubleValue((double)(TodosNodos.GetN()-2-nNodesInCall)));
-		uint32_t id_destino_libre = Uniform_equipo_destino->GetInteger();
+	// Si está libre pero no se puede llamar
+    else if(nodosLibres <= 0){
+			Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
+			Simulator::Schedule(t_inicio, &Llamada::Call, this, nodo_origen);
+	}
 		
+	// Si sí se puede llamar
+	else{
+		
+		Uniform_equipo_destino->SetAttribute("Max", DoubleValue((double)(nodosLibres-1)));
+		uint32_t id_destino_libre = Uniform_equipo_destino->GetInteger();
+	
 		// id_destino_libre = 3
 		//                |
 		// OOXOOOXOOXOOOOOXO
@@ -96,7 +104,7 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 
 		NS_LOG_DEBUG("El id del nodo destino libre: " << id_destino_libre);
 		uint32_t index = 0;
-        while(index <= id_destino_libre){
+		while(index <= id_destino_libre){
 			while(nodeCalledList->at(id_destino) != LIBRE || id_destino == nodo_origen->GetId()){
 				id_destino++;
 			}
@@ -105,13 +113,13 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		}
 		id_destino--;
 
-        NS_LOG_DEBUG("El id del nodo destino: " << id_destino);
+		NS_LOG_DEBUG("El id del nodo destino: " << id_destino);
 
-        nodeCalledList->at(nodo_origen->GetId()) = OCUPADO;
-        nodeCalledList->at(id_destino) = OCUPADO;
+		nodeCalledList->at(nodo_origen->GetId()) = OCUPADO;
+		nodeCalledList->at(id_destino) = OCUPADO;
 		nNodesInCall += 2;
-        
-        // CREAR APLICACIONES FUENTES
+		
+		// CREAR APLICACIONES FUENTES
 		NodeContainer Nodo_Origen;
 		NodeContainer Nodo_Destino;
 
@@ -127,7 +135,7 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 
 		H_ClientOnOff_origen.SetConstantRate(TasaApp,TamPack);		
 		H_ClientOnOff_origen.SetAttribute("OnTime",PointerValue(Exp_ON));
-  		H_ClientOnOff_origen.SetAttribute("OffTime",PointerValue(Exp_OFF));
+		H_ClientOnOff_origen.SetAttribute("OffTime",PointerValue(Exp_OFF));
 		H_ClientOnOff_origen.SetAttribute("StopTime",TimeValue(Simulator::Now()+t_fin));
 		App_Nodo_Origen=H_ClientOnOff_origen.Install (Nodo_Origen);
 		
@@ -141,7 +149,9 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		Simulator::Schedule(t_fin, &Llamada::Hang,this, Nodo_Origen.Get(0), Nodo_Destino.Get(0));
         
     }
+	
 }
+
 
 void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 
