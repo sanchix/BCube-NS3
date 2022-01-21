@@ -25,6 +25,8 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 	Exp_1 = CreateObject<ConstantRandomVariable> ();
 	Exp_0->SetAttribute ("Constant", DoubleValue (0.0));
 	Exp_1->SetAttribute ("Constant", DoubleValue (1.0));
+	
+	//NS_LOG_DEBUG("Tam pack: " << TamPack);
 
 
 	TodosNodos = nodos;
@@ -48,45 +50,50 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
         Simulator::Schedule(t_inicio, &Llamada::Call, this, TodosNodos.Get(i));
 	}
 	
-	NS_LOG_INFO("Tam pack: " << TamPack);
 	
 }
 
 void Llamada::Call(Ptr<Node> nodo_origen){
 	
 	NS_LOG_FUNCTION("CALL - El id del nodo llamante: "<< nodo_origen->GetId());
-	NS_LOG_FUNCTION("El estado del nodo es: "<<nodeCalledList->at(nodo_origen->GetId()));
+	NS_LOG_DEBUG("El estado del nodo es: "<<nodeCalledList->at(nodo_origen->GetId()));
 	
 
+	// Trazas
 	if (nodo_origen->GetNApplications() > 1){
 		TimeValue t_parada;
 		nodo_origen->GetApplication(nodo_origen->GetNApplications() - 1)->GetAttribute("StopTime", t_parada);
 		NS_LOG_DEBUG ("Valor del tiempo de parada del nodo " << nodo_origen->GetId() << ": "<< t_parada.Get());
 	}	
 	
-	int i = 0;
-	for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
-		NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
-		i++;
-	}
-	NS_LOG_INFO("nNodesInCall: " << nNodesInCall);
+	// Trazas
+	//int i = 0;
+	//for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
+	//	NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
+	//	i++;
+	//}
+	NS_LOG_DEBUG("nNodesInCall: " << nNodesInCall);
 
     if(nodeCalledList->at(nodo_origen->GetId()) != LIBRE){
         nodeCalledList->at(nodo_origen->GetId()) = IMPACIENTE;
-		int i = 0;
-		for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
-			NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
-			i++;
-		}
+
+        // Trazas
+		//int i = 0;
+		//for (std::vector<int>::iterator it = nodeCalledList->begin(); it != nodeCalledList->end(); ++it){
+		//	NS_LOG_DEBUG("El valor del estado del nodo "<<i<<" es "<< *it);
+		//	i++;
+		//}
     }
     else{
     	uint32_t id_destino = 0;
 		Uniform_equipo_destino->SetAttribute("Max", DoubleValue((double)(TodosNodos.GetN()-2-nNodesInCall)));
 		uint32_t id_destino_libre = Uniform_equipo_destino->GetInteger();
+		
 		// id_destino_libre = 3
 		//                |
 		// OOXOOOXOOXOOOOOXO
 		// index -> 3
+
 		NS_LOG_DEBUG("El id del nodo destino libre: " << id_destino_libre);
 		uint32_t index = 0;
         while(index <= id_destino_libre){
@@ -143,40 +150,6 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
     NS_LOG_FUNCTION("HANG - El id del nodo llamante: "<< id_origen);
     NS_LOG_FUNCTION("HANG - El id del nodo llamado: "<< id_destino);
 
-    // CERRAR APLICACIONES
-    //int numAppOrig = nodo_origen->GetNApplications();
-    //int numAppDestino = nodo_destino->GetNApplications();
-
-	/*
-    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del origen: "<< numAppOrig);
-    NS_LOG_DEBUG("HANG - ANTES Numero de Aplicaciones del destino: "<< numAppDestino);
-	*/    
-	
-    //ObjectDeleter::Delete(GetPointer(nodo_origen->GetApplication(1)->GetObject<Object>()));
-    //ObjectDeleter::Delete(GetPointer(nodo_destino->GetApplication(1)->GetObject<Object>()));
-    //nodo_origen->GetApplication(1)->Dispose();
-    //nodo_destino->GetApplication(1)->Dispose();
-    //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_origen->GetApplication(1)));
-    //ns3::DefaultDeleter<Application>::Delete(GetPointer(nodo_destino->GetApplication(1)));
-    
-    //Cambiamos los parametros de la aplicacion para que no mande mas trafico...
-    //nodo_origen->GetApplication(numAppOrig-1)->SetAttribute("OnTime",PointerValue(Exp_0));
-   	//nodo_destino->GetApplication(numAppDestino-1)->SetAttribute("OffTime",PointerValue(Exp_1));
-	
-    // Ptr<OnOffApplication> AppOrigen = nodo_origen->GetApplication(numAppOrig-1)->GetObject<OnOffApplication>();
-    //Ptr<OnOffApplication> AppDestino = nodo_destino->GetApplication(numAppDestino-1)->GetObject<OnOffApplication>();
-    /*
-    Simulator::ScheduleNow(&Object::SetAttribute,AppOrigen, "StopTime", TimeValue(Simulator::Now()));
-    Simulator::ScheduleNow(&Object::SetAttribute,AppDestino, "StopTime", TimeValue(Simulator::Now()));
-    */
-	/*
-	nodo_origen->GetApplication(numAppOrig-1)->SetAttribute("StopTime",TimeValue(Simulator::Now()));
-	nodo_destino->GetApplication(numAppDestino-1)->SetAttribute("StopTime",TimeValue(Simulator::Now()));   	
-	*/
-	/*
-    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del origen: "<< numAppOrig);
-    NS_LOG_DEBUG("HANG - DESPUES Numero de Aplicaciones del destino: "<< numAppDestino);
-	*/
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
     Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
@@ -190,11 +163,4 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 	nodeCalledList->at(id_destino) = LIBRE;
 	
 	nNodesInCall -= 2;
-
 }
-
-/*
-AppOnOff Llamada::GetObserver(){
-  return obs_OnOff;
-}
-*/

@@ -28,10 +28,10 @@ double escenario(StageConfig_t *config){
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
 
-	for (uint32_t j = 0; j<topology.nodes.GetN();j++){
-		NS_LOG_INFO("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
+	for (uint32_t j = 0; j<100;j++){
+		NS_LOG_DEBUG("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
-	//NS_LOG_INFO ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
+	//NS_LOG_DEBUG ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
 	return 1.0;
 	
 }
@@ -52,13 +52,14 @@ void asignaDirecciones(TopologyElements_t &topology){
 	Ipv4NixVectorRouting IPv4NixVectorRouting = Ipv4NixVectorRouting();
 	NS_LOG_INFO("Direcciones colocadas");
 
-	// Esto no funciona
+	// Generación de rutas en un fichero para debug
 	/*OutputStreamWrapper Outputwrapper = OutputStreamWrapper("NixVector12.txt",std::ios::out);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(3, 0).GetLocal(),&Outputwrapper,Time::MS);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1024)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
-	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2800)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);*/
+	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2800)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+	*/
 	
 	// Trazas
 	for (uint32_t i = 0; i<topology.nodes.GetN(); i++){

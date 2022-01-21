@@ -9,14 +9,9 @@
 #include "paramRange.h"
 #include "escenario.h"
 
-
-
 using namespace ns3;
 
-
-
 NS_LOG_COMPONENT_DEFINE ("Main");
-
 
 
 int main (int argc, char *argv[]){
@@ -27,15 +22,15 @@ int main (int argc, char *argv[]){
 	
 	int porcentajeConzianza = 95;
 	int numIter = 1;
-	int bCubeLevel = 1;    // Comproar si está entre 0 y 3
-	int nNodosDim = 4;
+	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
+	int nNodosDim = 16;
 	int regBinarioPuentes = 10;
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
 	cmd.AddValue("nNodosDim", "Número de equipos por nivel: ", nNodosDim);
 	cmd.Parse(argc, argv);
-	NS_LOG_DEBUG("Param: Número de iteraciones para la simulación" << numIter);
-	NS_LOG_DEBUG("Param: Número de nodos por nivel BCube" << nNodosDim);
+	NS_LOG_INFO("Param: Número de iteraciones para la simulación" << numIter);
+	NS_LOG_INFO("Param: Número de nodos por nivel BCube" << nNodosDim);
 	
 
 	// Configure simulation
