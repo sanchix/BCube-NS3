@@ -109,16 +109,16 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 
 		OnOffHelper H_ClientOnOff_origen ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Destino.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
 		H_ClientOnOff_origen.SetConstantRate(TasaApp,TamPack);
-		H_ClientOnOff_origen.Install (Nodo_Origen);
 		H_ClientOnOff_origen.SetAttribute("OnTime",PointerValue(Exp_ON));
   		H_ClientOnOff_origen.SetAttribute("OffTime",PointerValue(Exp_OFF));
+		H_ClientOnOff_origen.Install (Nodo_Origen);
         Simulator::Schedule(t_fin, &Llamada::Hang,this, Nodo_Origen.Get(0), Nodo_Destino.Get(0));
         
         OnOffHelper H_ClientOnOff_destino ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Origen.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
 		H_ClientOnOff_destino.SetConstantRate(TasaApp,TamPack);
-		H_ClientOnOff_destino.Install (Nodo_Destino);
 		H_ClientOnOff_destino.SetAttribute("OnTime",PointerValue(Exp_ON));
 		H_ClientOnOff_destino.SetAttribute("OffTime",PointerValue(Exp_OFF));
+		H_ClientOnOff_destino.Install (Nodo_Destino);
         
     }
 }
