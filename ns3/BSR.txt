@@ -1,8 +1,0 @@
-NixVector BSR(Saddr,Daddr){
-	
-
-
-	return PATH
-}
-
-ipv4
