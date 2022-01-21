@@ -1,7 +1,4 @@
 
-#include <math.h>
-#include "ns3/log.h"
-#include "ns3/nstime.h"
 #include "paramRange.h"
 
 
@@ -73,7 +70,7 @@ void ParamRange<T>::Reset(){
 
 template<typename T>
 T ParamRange<T>::progressionAritmetic(){
-	return initialValue + index * aritmeticProgressionRate;
+	return initialValue + aritmeticProgressionRate * index;
 }
 
 template<typename T>
@@ -84,14 +81,19 @@ T ParamRange<T>::progressionGeometric(){
 template<typename T>
 double ParamRange<T>::CurrentDouble(){
 	double result = -1;
-	if(std::is_same<T,double>::value){
+	if(std::is_same<T, double>::value){
 		result = *(double *)_param;
 	}
 	else if(std::is_same<T, Time>::value){
-		result = ((Time)*_param).GetSeconds();
+		Time *aux = (Time *)_param;
+		result = aux->GetSeconds();
 	}
 	else if(std::is_same<T, int>::value){
 		result = (double)*(int *)_param;
+	}
+	else if(std::is_same<T, DataRate>::value){
+		DataRate *aux = (DataRate *)_param;
+		result = aux->GetBitRate();
 	}
 	return result;
 }
@@ -102,3 +104,4 @@ double ParamRange<T>::CurrentDouble(){
 template class ParamRange<Time>;
 template class ParamRange<double>;
 template class ParamRange<int>;
+template class ParamRange<DataRate>;

@@ -1,10 +1,9 @@
 
 #include "escenario.h"
-#include "puente_helper.h"
-#include "generaTrafico.h"
-#include "retardo.h"
+
 
 using namespace ns3;
+
 
 NS_LOG_COMPONENT_DEFINE("Escenario");
 
@@ -15,8 +14,9 @@ double escenario(StageConfig_t *config){
 	Simulator::Destroy();
 	
 	TopologyElements_t topology;
-	
-	topologiaFisica(config->bCubeLevel, config->nNodosDim, topology);
+	double nNodosDim = config->bCubeLevel>0?pow(config->nNodos, 1/config->bCubeLevel):config->nNodos;
+	NS_LOG_INFO("Generating topology for " << nNodosDim << " nodes in each one of the " << config->bCubeLevel + 1 << " dims");
+	topologiaFisica(config->bCubeLevel, nNodosDim, topology);
 	NS_LOG_INFO("Topology generated");
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
 
@@ -32,7 +32,7 @@ double escenario(StageConfig_t *config){
 	Retardo obs = llamada->GetObserver();
 	NS_LOG_INFO("El retardo medio de las comunicaciones es: "<< obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS)<<"ms");
 
-	for (uint32_t j = 0; j<100;j++){
+	for (int j = 0; j < config->nNodos;j++){
 		NS_LOG_DEBUG("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
 	//NS_LOG_DEBUG ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
