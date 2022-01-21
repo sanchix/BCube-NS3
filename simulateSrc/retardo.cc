@@ -1,16 +1,15 @@
-#include "ns3/object-base.h"
-#include "ns3/log.h"
+
 #include "retardo.h"
-#include "etiquetaTiempo.h"
-#include "ns3/packet.h"
-#include "ns3/tag.h"
+
 
 using namespace ns3;
+
 
 NS_LOG_COMPONENT_DEFINE ("Retardo");
 
 //Observador que recibe el node container completo y ya el se las apaña. Esta to gucci
 //Sirve para calcular el retardo medio de los paquetes
+
 
 Retardo::Retardo(){};
 
@@ -55,6 +54,10 @@ Retardo::RxEnd (Ptr<const Packet> paquete)
   average = average + (Now()-etiqueta.GetTimestamp());
   m_cuenta++;
   NS_LOG_DEBUG ("Llego el paquete "<<paquete->GetUid()<<"con Timestamp: "<<etiqueta.GetTimestamp()<<" media ahora: "<<average/m_cuenta);
+  if((int)(Simulator::Now().GetSeconds()*10 / STOPTIME) > getPercent()){
+	  getPercent() = (Simulator::Now().GetSeconds()*10 / STOPTIME);
+	  NS_LOG_INFO("Status: " << getPercent()*10 << "%");
+  }
 }
 
 Time

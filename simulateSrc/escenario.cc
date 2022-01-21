@@ -26,7 +26,7 @@ double escenario(StageConfig_t *config){
 
 	//AppOnOff Obs_OnOff = llamada->GetObserver();
 	
-	Simulator::Stop(Seconds(300));
+	Simulator::Stop(Seconds(STOPTIME));
 	Simulator::Run();
 	
 	Retardo obs = llamada->GetObserver();
