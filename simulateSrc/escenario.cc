@@ -22,6 +22,8 @@ double escenario(StageConfig_t *config){
 	asignaDirecciones(topology);
 	Llamada *llamada = generaTrafico(topology.nodes);
 	llamada = llamada;
+
+	//AppOnOff Obs_OnOff = llamada->GetObserver();
 	
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
@@ -29,6 +31,7 @@ double escenario(StageConfig_t *config){
 	for (uint32_t j = 0; j<topology.nodes.GetN();j++){
 		NS_LOG_INFO("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
+	//NS_LOG_INFO ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
 	return 1.0;
 	
 }
