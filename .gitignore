@@ -3,3 +3,6 @@
 
 # Each one has its own local paths
 myLocalPaths
+
+# Ignore .bak files
+*.bak
