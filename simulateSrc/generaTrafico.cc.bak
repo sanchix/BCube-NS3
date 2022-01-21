@@ -12,5 +12,5 @@ Llamada *generaTrafico (NodeContainer nodos_BCube){
 
   // Creamos las llamadas
   NS_LOG_INFO("Se planifican las Llamadas");
-  return new Llamada(nodos_BCube,30.0, 140.0);
+  return new Llamada(nodos_BCube,50.0, 140.0);
 }

@@ -171,7 +171,10 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
     nodeCalledList->at(id_origen) = LIBRE;
     Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
     Simulator::Schedule(t_inicio, &Llamada::Call,this, nodo_origen);
-    
+	
+    //delete GetPointer(nodo_destino->GetApplication(1));
+	//delete GetPointer(nodo_origen->GetApplication(1));
+	
     // Nueva llamada del destino (si la quiere)
     if(nodeCalledList->at(id_destino) == IMPACIENTE){
 		NS_LOG_INFO("Era impaciente");

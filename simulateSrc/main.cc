@@ -23,9 +23,9 @@ int main (int argc, char *argv[]){
 	int porcentajeConzianza = 95;
 	int numIter = 1;
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
-	int nNodos = 4;
-	int regBinarioPuentes = 10000000;
-	Time delay("20ms");
+	int nNodos = 256;
+	int regBinarioPuentes = 100000;
+	Time delay("20ns");
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
 	cmd.AddValue("nNodos", "Número total de equipos: ", nNodos);
@@ -46,8 +46,8 @@ int main (int argc, char *argv[]){
 	
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, 3);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
-	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, 2);
-	regBinarioPuentesParam.SetGeometricProgressionRate(10);
+	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, 9);
+	regBinarioPuentesParam.SetGeometricProgressionRate(2);
 
 
 	// Configure graphic
