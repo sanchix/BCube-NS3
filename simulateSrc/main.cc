@@ -23,7 +23,7 @@ int main (int argc, char *argv[]){
 	int porcentajeConzianza = 95;
 	int numIter = 1;
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
-	int nNodos = 256;
+	int nNodos = 4;
 	int regBinarioPuentes = 100000;
 	Time delay("20ns");
 	
