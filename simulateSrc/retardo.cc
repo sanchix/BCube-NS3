@@ -12,18 +12,31 @@ NS_LOG_COMPONENT_DEFINE ("Retardo");
 //Observador que recibe el node container completo y ya el se las apaña. Esta to gucci
 //Sirve para calcular el retardo medio de los paquetes
 
-Retardo::Retardo (Ptr<UdpEchoClient> emisor,Ptr<UdpEchoServer> receptor)
+Retardo::Retardo (NodeContainer nodos)
 {
   m_cuenta = 0;
   average = Time("0s");
-  emisor->TraceConnectWithoutContext ("Tx",
-                                        MakeCallback(&Retardo::TxIni,
-                                                     this));
-  receptor->TraceConnectWithoutContext ("Rx",
-                                        MakeCallback(&Retardo::RxEnd,
-                                                     this)); 
+
+ 
+  for (NodeContainer::Iterator indice = nodos.Begin (); indice != nodos.End (); indice++){
+	Ptr<UdpServer> servidor = indice->GetApplication(0)->GetObject<UdpServer>();
+	Ptr<OnOffApplication> cliente = indice->GetApplication(1)->GetObject<OnOffApplication>();
+  
+	cliente->TraceConnectWithoutContext ("Tx",
+											MakeCallback(&Retardo::TxIni,
+														this));
+	servidor->TraceConnectWithoutContext ("Rx",
+											MakeCallback(&Retardo::RxEnd,
+														this)); 
+	}
 }
 
+void
+Retardo::NewCall (Ptr<OnOffApplication> emisor){
+	emisor->TraceConnectWithoutContext ("Tx",
+											MakeCallback(&Retardo::TxIni,
+														this));
+}
 
 void
 Retardo::TxIni (Ptr<const Packet> paquete)

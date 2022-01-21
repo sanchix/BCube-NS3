@@ -14,7 +14,6 @@ public:
            Retardo      (NodeContainer nodos);
   void     TxIni (Ptr<const Packet> paquete);
   void     RxEnd (Ptr<const Packet> paquete);
-  void 	   NewCall (Ptr<OnOffApplication> emisor);
   Time     RetardoMedio   ();
 
 private:
