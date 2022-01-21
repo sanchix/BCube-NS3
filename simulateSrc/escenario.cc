@@ -16,7 +16,7 @@ double escenario(StageConfig_t *config){
 	TopologyElements_t topology;
 	double nNodosDim = config->bCubeLevel>0?pow(config->nNodos, 1/config->bCubeLevel):config->nNodos;
 	NS_LOG_INFO("Generating topology for " << nNodosDim << " nodes in each one of the " << config->bCubeLevel + 1 << " dims");
-	topologiaFisica(config->bCubeLevel, nNodosDim, topology);
+	topologiaFisica(config->bCubeLevel, nNodosDim, topology, &(config->puenteConfig));
 	NS_LOG_INFO("Topology generated");
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
 
@@ -36,7 +36,7 @@ double escenario(StageConfig_t *config){
 		NS_LOG_DEBUG("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
 	//NS_LOG_DEBUG ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
-	return 1.0;
+	return obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS);
 	
 }
 
@@ -80,7 +80,7 @@ void asignaDirecciones(TopologyElements_t &topology){
 }
 
 
-void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology){
+void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology, PuenteConfig_t *puenteConfig){
 	
 	int nDims = bCubeLevel+1;
 	int numEquipos = pow(dimSize,nDims);
@@ -88,9 +88,6 @@ void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology){
 	
 	topology.nodes = NodeContainer(numEquipos);
 
-	PuenteConfig_t puenteConfig;
-	puenteConfig.regimenBinario = DataRate(0);
-	
 			
 	NS_LOG_INFO("BCUBE " << bCubeLevel);
 		
@@ -120,7 +117,7 @@ void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology){
 				line.Add(topology.nodes.Get(index));
 			}
 			NS_LOG_INFO(line.GetN());
-			PuenteHelper(line, nodosLan, &puenteConfig);
+			PuenteHelper(line, nodosLan, puenteConfig);
 			topology.devices.Add(nodosLan);	
 			
 		}

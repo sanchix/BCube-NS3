@@ -39,7 +39,7 @@ typedef struct{
 
 double escenario(StageConfig_t *config);
 
-void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology);
+void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology, PuenteConfig_t *puenteConfig);
 
 void asignaDirecciones(TopologyElements_t &elements);
 
