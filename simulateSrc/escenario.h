@@ -2,6 +2,8 @@
 #define escenario_h
 
 
+#include <math.h>
+
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node.h"
@@ -22,7 +24,7 @@ using namespace ns3;
 
 typedef struct{
 	int bCubeLevel;
-	int nNodosDim;
+	int nNodos;
 } StageConfig_t;
 
 typedef struct{

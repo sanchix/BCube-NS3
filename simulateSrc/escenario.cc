@@ -14,8 +14,9 @@ double escenario(StageConfig_t *config){
 	Simulator::Destroy();
 	
 	TopologyElements_t topology;
-	
-	topologiaFisica(config->bCubeLevel, config->nNodosDim, topology);
+	double nNodosDim = config->bCubeLevel>0?pow(config->nNodos, 1/config->bCubeLevel):config->nNodos;
+	NS_LOG_INFO("Generating topology for " << nNodosDim << " nodes in each one of the " << config->bCubeLevel + 1 << " dims");
+	topologiaFisica(config->bCubeLevel, nNodosDim, topology);
 	NS_LOG_INFO("Topology generated");
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
 

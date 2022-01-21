@@ -23,14 +23,14 @@ int main (int argc, char *argv[]){
 	int porcentajeConzianza = 95;
 	int numIter = 1;
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
-	int nNodosDim = 16;
+	int nNodos = 4096;
 	int regBinarioPuentes = 10;
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
-	cmd.AddValue("nNodosDim", "Número de equipos por nivel: ", nNodosDim);
+	cmd.AddValue("nNodos", "Número total de equipos: ", nNodos);
 	cmd.Parse(argc, argv);
-	NS_LOG_INFO("Param: Número de iteraciones para la simulación" << numIter);
-	NS_LOG_INFO("Param: Número de nodos por nivel BCube" << nNodosDim);
+	NS_LOG_DEBUG("Param: Número de iteraciones para la simulación: " << numIter);
+	NS_LOG_DEBUG("Param: Número de equipos: " << nNodos);
 	
 
 	// Configure simulation
@@ -38,7 +38,7 @@ int main (int argc, char *argv[]){
 	
 	StageConfig_t stageConfig;
 	stageConfig.bCubeLevel = bCubeLevel;
-	stageConfig.nNodosDim = nNodosDim;
+	stageConfig.nNodos = nNodos;
 	
 	ParamRange<int> bCubeLevelParam(&bCubeLevel, PROGRESSION_ARITMETIC, 3);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
