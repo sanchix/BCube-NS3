@@ -1,0 +1,9 @@
+Tiempos de simulación bajo las siguientes condiciones
+	> Ya compilado.
+	> 2 iteraciones.
+	> 4 nodos.
+	> Nivel BCube desde el 0 (en la práctica solo el 0 y 1).
+	> 10 regímenes binarios desde 10000 y x2 cada uno.
+	
+	
+	8:57 con 4 nucleos y 3GB de ram

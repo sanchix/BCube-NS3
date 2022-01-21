@@ -36,7 +36,7 @@ public:
 
 private:
   Time      average;
-  static auto getPercent() -> int* {
+  static auto getPercent() -> int& {
 	  static int percent = 0;
 	  return percent;
   }
