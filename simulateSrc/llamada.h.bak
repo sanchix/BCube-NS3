@@ -21,7 +21,7 @@ class Llamada {
  	Llamada(NodeContainer nodos, double duracion, double max_t_inicio);
  	void Call(Ptr<Node> nodo_origen);
  	void Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino);
-	Retardo GetObserver();
+	Retardo getObserver();
 
  private:
   NodeContainer TodosNodos;

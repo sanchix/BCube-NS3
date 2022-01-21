@@ -21,7 +21,13 @@ Retardo::AddServers (NodeContainer nodos)
   average = Time("0s");
 
   for (uint32_t i=0; i< nodos.GetN(); i++){
+ // for (NodeContainer::Iterator indice = nodos.Begin (); indice != nodos.End (); indice++){
 	Ptr<UdpServer> servidor = nodos.Get(i)->GetApplication(0)->GetObject<UdpServer>();
+	//Ptr<OnOffApplication> cliente = nodos.Get(i)->GetApplication(1)->GetObject<OnOffApplication>();
+  
+	//cliente->TraceConnectWithoutContext ("Tx",
+	//										MakeCallback(&Retardo::TxIni,
+	//													this));
 	servidor->TraceConnectWithoutContext ("Rx",
 											MakeCallback(&Retardo::RxEnd,
 														this)); 

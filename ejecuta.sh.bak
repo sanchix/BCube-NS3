@@ -21,7 +21,6 @@ do
 	echo Copying code from $CODE_PATH
 	cp $CODE_PATH/*.h $FULL_SCRATCH_PATH
 	cp $CODE_PATH/*.cc $FULL_SCRATCH_PATH
-	cp ./ns3/onoff-application.cc /opt/salas/ns-3.34/src/applications/model/
 done
 
 

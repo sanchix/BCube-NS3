@@ -29,7 +29,7 @@ double escenario(StageConfig_t *config){
 	Simulator::Stop(Seconds(300));
 	Simulator::Run();
 	
-	Retardo obs = llamada->GetObserver();
+	Retardo obs = llamada->GetObserver()
 	NS_LOG_INFO("El retardo medio de las comunicaciones es: "<< obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS)<<"ms");
 
 	for (uint32_t j = 0; j<100;j++){

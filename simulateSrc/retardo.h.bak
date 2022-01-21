@@ -17,7 +17,7 @@ class Retardo
 {
 public:
 		   Retardo ();
-  void     AddServers (NodeContainer nodos);
+		   Retardo (NodeContainer nodos);
   void     TxIni (Ptr<const Packet> paquete);
   void     RxEnd (Ptr<const Packet> paquete);
   void 	   NewCall (Ptr<OnOffApplication> emisor);

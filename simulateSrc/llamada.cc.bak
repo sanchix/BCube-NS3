@@ -49,7 +49,6 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
 		t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));	
         Simulator::Schedule(t_inicio, &Llamada::Call, this, TodosNodos.Get(i));
 	}
-	
 	NS_LOG_DEBUG("Se crea el observador");
 	obs_ret.AddServers(TodosNodos);
 	

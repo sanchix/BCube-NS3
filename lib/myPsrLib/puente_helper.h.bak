@@ -14,7 +14,6 @@ using namespace ns3;
 
 typedef struct{
 	DataRate regimenBinario;
-	Time delay;
 	int deviceQueueSize = -1;
 } PuenteConfig_t;
 
