@@ -23,14 +23,14 @@ int main (int argc, char *argv[]){
 	int porcentajeConzianza = 95;
 	int numIter = 1;
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
-	int nNodosDim = 16;
-	int regBinarioPuentes = 10;
+	int nNodos = 4;
+	int regBinarioPuentes = 1000;
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
-	cmd.AddValue("nNodosDim", "Número de equipos por nivel: ", nNodosDim);
+	cmd.AddValue("nNodos", "Número total de equipos: ", nNodos);
 	cmd.Parse(argc, argv);
-	NS_LOG_INFO("Param: Número de iteraciones para la simulación" << numIter);
-	NS_LOG_INFO("Param: Número de nodos por nivel BCube" << nNodosDim);
+	NS_LOG_DEBUG("Param: Número de iteraciones para la simulación: " << numIter);
+	NS_LOG_DEBUG("Param: Número de equipos: " << nNodos);
 	
 
 	// Configure simulation
@@ -38,21 +38,25 @@ int main (int argc, char *argv[]){
 	
 	StageConfig_t stageConfig;
 	stageConfig.bCubeLevel = bCubeLevel;
-	stageConfig.nNodosDim = nNodosDim;
+	stageConfig.nNodos = nNodos;
+	stageConfig.puenteConfig.regimenBinario = DataRate(regBinarioPuentes);
 	
-	ParamRange<int> bCubeLevelParam(&bCubeLevel, PROGRESSION_ARITMETIC, 3);
+	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, 3);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
-	ParamRange<int> regBinarioPuentesParam(&regBinarioPuentes, PROGRESSION_GEOMETRIC, 3);
+	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, 0);
 	regBinarioPuentesParam.SetGeometricProgressionRate(10);
 
 
+	// Configure graphic
 	TitulosGrafica_t titulos;
 	titulos.title = string("Retardo según velocida de enlace");
 	titulos.absTitle = string("Velocida de enlace");
 	titulos.ordTitle = string("Retardo medio");
 	strcpy(titulos.curveExpresion, "BCube %0.f");
 	
-	Gnuplot grafiquita = grafica<StageConfig_t, int, int>(&stageConfig, titulos, bCubeLevelParam, regBinarioPuentesParam, numIter, porcentajeConzianza, escenario);	
+	
+	// Simulate
+	Gnuplot grafiquita = grafica<StageConfig_t, int, DataRate>(&stageConfig, titulos, bCubeLevelParam, regBinarioPuentesParam, numIter, porcentajeConzianza, escenario);	
 	
 	std::ofstream fichero ("Trabajo.plt");
 	grafiquita.GenerateOutput (fichero);

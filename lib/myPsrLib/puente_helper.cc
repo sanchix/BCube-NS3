@@ -30,7 +30,7 @@ Ptr<Node> PuenteHelper (NodeContainer nodosLan, NetDeviceContainer & d_nodosLan,
 	}
 	
 	h_csma.SetChannelAttribute("Delay", TimeValue(config->delay));
-	
+	NS_LOG_DEBUG("Delay de prop: "<< config->delay);
 	for (NodeContainer::Iterator indice = nodosLan.Begin (); indice != nodosLan.End (); indice++){
 			
 		NetDeviceContainer enlace = h_csma.Install(NodeContainer (*indice, puente));

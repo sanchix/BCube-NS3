@@ -25,9 +25,11 @@ int main (int argc, char *argv[]){
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
 	int nNodos = 4;
 	int regBinarioPuentes = 1000;
+	Time delay("20ms");
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
 	cmd.AddValue("nNodos", "Número total de equipos: ", nNodos);
+	cmd.AddValue("delay", "Número total de equipos: ", delay);
 	cmd.Parse(argc, argv);
 	NS_LOG_DEBUG("Param: Número de iteraciones para la simulación: " << numIter);
 	NS_LOG_DEBUG("Param: Número de equipos: " << nNodos);
@@ -40,6 +42,7 @@ int main (int argc, char *argv[]){
 	stageConfig.bCubeLevel = bCubeLevel;
 	stageConfig.nNodos = nNodos;
 	stageConfig.puenteConfig.regimenBinario = DataRate(regBinarioPuentes);
+	stageConfig.puenteConfig.delay = delay;
 	
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, 3);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
