@@ -15,17 +15,17 @@ NS_LOG_COMPONENT_DEFINE ("Main");
 
 typedef struct{
 	int porcentajeConzianza = 95;
-	int numIter = 4;
+	int numIter = 2;
 	int bCubeLevelIni = 0;    // Comproar si está entre 0 y 3
 	int numBCubeLevels = 4;
 	int nNodos = 4;
 	Time delay;
 	int regBinarioPuentes = 10000;
 	double coefRB = 1.5;
-	int numRB = 10;
+	int numRB = 3;
 	uint32_t porcentajeTrafico = 30;
-	uint32_t coefT = 10;
-	int numT = 10;
+	uint32_t coefT = 4;
+	int numT = 3;
 } AFP_t;
 
 void symRetXVel(AFP_t *config);
@@ -91,8 +91,8 @@ void symRetXVel(AFP_t *params){
 	
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, params->numBCubeLevels-1);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
-	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, params->numRB);
-	regBinarioPuentesParam.SetGeometricProgressionRate(params->coefRB);
+	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, params->numRB-1);
+	regBinarioPuentesParam.SetGeometricProgressionRate(params->coefRB-1);
 
 	// Configure graphic
 	TitulosGrafica_t titulos;
@@ -127,8 +127,8 @@ void symPerXTra(AFP_t *params){
 	
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, params->numBCubeLevels-1);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
-	ParamRange<uint32_t> MaxTraficoParam(&stageConfig.PorcentajeTrafico, PROGRESSION_ARITMETIC, params->numT);
-	MaxTraficoParam.SetAritmeticProgressionRate(params->coefT);
+	ParamRange<uint32_t> MaxTraficoParam(&stageConfig.PorcentajeTrafico, PROGRESSION_ARITMETIC, params->numT-1);
+	MaxTraficoParam.SetAritmeticProgressionRate(params->coefT-1);
 
 	// Configure graphic
 	TitulosGrafica_t titulos;
