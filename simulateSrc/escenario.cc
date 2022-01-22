@@ -41,7 +41,8 @@ double escenario(StageConfig_t *config){
 		NS_LOG_DEBUG("El nodo "<<j<< " ha recibido "<< topology.nodes.Get(j)->GetApplication(0)->GetObject<UdpServer>()->GetReceived() <<" paquetes");
 	}
 	//NS_LOG_DEBUG ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
-	return obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS);
+	NS_LOG_INFO("Porcentaje de paquetes pedidos: " << obs.PorcentajePerdidaPaqs());
+	return obs.PorcentajePerdidaPaqs();
 	
 }
 

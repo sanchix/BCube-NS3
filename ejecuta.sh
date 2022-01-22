@@ -42,4 +42,4 @@ else
 	./waf --run "$SCRATCH_SUBDIR_NAME $1"
 fi
 
-mv Trabajo.plt $OLD_WD
+mv *.plt $OLD_WD

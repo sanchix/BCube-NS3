@@ -23,12 +23,12 @@ int main (int argc, char *argv[]){
 	int porcentajeConzianza = 95;
 	int numIter = 1;
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
-	int nNodos = 64;
-	int regBinarioPuentes = 100000;
+	int nNodos = 4;
+	int regBinarioPuentes = 10000;
 	Time delay("20us");
 	bool ControlaTrafico = true;
 	uint32_t PorcentajeTrafico = 30;
-	
+		
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
 	cmd.AddValue("nNodos", "Número total de equipos: ", nNodos);
 	cmd.AddValue("delay", "Número total de equipos: ", delay);
@@ -48,10 +48,10 @@ int main (int argc, char *argv[]){
 	stageConfig.ControlaTrafico = ControlaTrafico;
 	stageConfig.PorcentajeTrafico = PorcentajeTrafico;
 	
-	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, 3);
+	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, 0);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
-	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, 0);
-	regBinarioPuentesParam.SetGeometricProgressionRate(2);
+	//ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, 0);
+	//regBinarioPuentesParam.SetGeometricProgressionRate(2);
 	ParamRange<uint32_t> MaxTraficoParam(&stageConfig.PorcentajeTrafico, PROGRESSION_ARITMETIC, 3);
 	MaxTraficoParam.SetAritmeticProgressionRate(10);
 
@@ -64,7 +64,7 @@ int main (int argc, char *argv[]){
 	
 	
 	// Simulate
-	Gnuplot grafiquita = grafica<StageConfig_t, int, DataRate>(&stageConfig, titulos, bCubeLevelParam, MaxTraficoParam, numIter, porcentajeConzianza, escenario);	
+	Gnuplot grafiquita = grafica<StageConfig_t, int, uint32_t>(&stageConfig, titulos, bCubeLevelParam, MaxTraficoParam, numIter, porcentajeConzianza, escenario);	
 	
 	std::ofstream fichero ("Trabajo.plt");
 	grafiquita.GenerateOutput (fichero);

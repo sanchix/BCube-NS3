@@ -11,13 +11,16 @@ NS_LOG_COMPONENT_DEFINE ("Retardo");
 //Sirve para calcular el retardo medio de los paquetes
 
 
-Retardo::Retardo(){};
+Retardo::Retardo(){
+	m_cuenta = 0;
+	enviados = 0;
+	average = Time("0s");
+};
+
 
 void
 Retardo::AddServers (NodeContainer nodos)
 {
-  m_cuenta = 0;
-  average = Time("0s");
 
   for (uint32_t i=0; i< nodos.GetN(); i++){
 	Ptr<UdpServer> servidor = nodos.Get(i)->GetApplication(0)->GetObject<UdpServer>();
@@ -42,7 +45,8 @@ Retardo::TxIni (Ptr<const Packet> paquete)
   etiqueta.SetTimestamp(Now());
   NS_LOG_DEBUG ("Creado paquete: "<<paquete->GetUid()<<" con timestamp: "<<etiqueta.GetTimestamp());
   paquete->AddPacketTag(etiqueta);
- }
+  enviados++;
+}
 
 void
 Retardo::RxEnd (Ptr<const Packet> paquete)
@@ -69,3 +73,8 @@ Retardo::RetardoMedio ()
   return average/m_cuenta;
 }
 
+double
+Retardo::PorcentajePerdidaPaqs()
+{
+	return (enviados - m_cuenta)*100/enviados;	
+}
