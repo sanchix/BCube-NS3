@@ -1,2 +1,8 @@
 Time: +0ms, Nix Routing
-Route Path: (Node 0 to Node 1, Nix Vector: 00000000000000000000000000000000)
+Route Path: (Node 0 to Node 1, Nix Vector: 0)
+10.1.0.1 (Node 0)   ---->   10.1.0.2 (Node 1)
+
+Time: +0ms, Nix Routing
+Route Path: (Node 0 to Node 2, Nix Vector: 1)
+10.1.0.5 (Node 0)   ---->   10.1.0.3 (Node 2)
+

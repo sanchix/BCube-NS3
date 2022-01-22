@@ -7,3 +7,5 @@ Tiempos de simulación bajo las siguientes condiciones
 	
 	
 	8:57 con 4 nucleos y 3GB de ram
+	
+	

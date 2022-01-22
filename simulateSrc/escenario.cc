@@ -14,8 +14,11 @@ double escenario(StageConfig_t *config){
 	Simulator::Destroy();
 	
 	TopologyElements_t topology;
-	double nNodosDim = config->bCubeLevel>0?pow(config->nNodos, 1/config->bCubeLevel):config->nNodos;
-	NS_LOG_INFO("Generating topology for " << nNodosDim << " nodes in each one of the " << config->bCubeLevel + 1 << " dims");
+	double nNodosDim = config->nNodos;
+	if(config->bCubeLevel>0){
+		nNodosDim = ceil(pow(config->nNodos, 1/(double)(config->bCubeLevel+1)));
+	}
+	NS_LOG_INFO("Generating topology for " << nNodosDim << " nodes in each one of the " << config->bCubeLevel + 1 << " dims (total " << config->nNodos << ")");
 	topologiaFisica(config->bCubeLevel, nNodosDim, topology, &(config->puenteConfig));
 	NS_LOG_INFO("Topology generated");
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
@@ -28,8 +31,8 @@ double escenario(StageConfig_t *config){
 	
 
 	Simulator::Stop(Seconds(STOPTIME));
-
-	Simulator::Run();
+	NS_LOG_INFO("RUN");
+	//Simulator::Run();
 	
 	Retardo obs = llamada->GetObserver();
 	NS_LOG_INFO("El retardo medio de las comunicaciones es: "<< obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS)<<"ms");
@@ -63,11 +66,10 @@ void asignaDirecciones(TopologyElements_t &topology, int nDim, int dimSize){
 	// Generación de rutas en un fichero para debug
 	OutputStreamWrapper Outputwrapper = OutputStreamWrapper("NixVector12.txt",std::ios::out);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
-	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
-	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(3, 0).GetLocal(),&Outputwrapper,Time::MS);
+	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
+	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(3, 0).GetLocal(),&Outputwrapper,Time::MS);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
-	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
-	
+	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
 	
 	// Trazas
 	for (uint32_t i = 0; i<topology.nodes.GetN(); i++){

@@ -35,6 +35,9 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4NixVectorRouting");
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4NixVectorRouting);
 
+int Ipv4NixVectorRouting::nDims = 0;
+int Ipv4NixVectorRouting::dimSize = 0;
+
 bool Ipv4NixVectorRouting::g_isCacheDirty = false;
 Ipv4NixVectorRouting::Ipv4AddressToNodeMap Ipv4NixVectorRouting::g_ipv4AddressToNodeMap;
 
@@ -133,6 +136,22 @@ Ipv4NixVectorRouting::FlushIpv4RouteCache (void) const
   m_ipv4RouteCache.clear ();
 }
 
+std::string vec_to_string(std::vector<int> vec){
+	std::string result = "";
+	for(std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it){
+		result += std::to_string(*it) + " ";
+	}
+	return result;
+}
+
+std::string arr_to_string(uint32_t *arr, uint32_t size){
+	std::string result = "";
+	for(uint32_t i = 0; i < size; i++){
+		result += std::to_string(arr[i]) + " ";
+	}
+	return result;
+}
+
 Ptr<NixVector>
 Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<NetDevice> oif) const
 {
@@ -141,15 +160,17 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 	Ptr<NixVector> nixVector = Create<NixVector>();
 	Ptr<Node> dest = GetNodeByIp(destIp);
 	
-	NS_LOG_LOGIC ("Going from Node " << source->GetId () << " to Node " << dest->GetId ());
+	NS_LOG_LOGIC ("Going from Node " << source->GetId () << " to Node " << dest->GetId () << " on " << nDims << " dims of size " << dimSize << ".");
 		
 	if(dest == 0){
 		NS_LOG_ERROR("No routing path exists");
+		NS_LOG_LOGIC("No routing path exists");
 		return 0;
 	}
 	
 	if(source == dest){
 		NS_LOG_DEBUG("Do not process packets to self");
+		NS_LOG_LOGIC("Do not process packets to self");
 		return 0;
 	}
 	
@@ -158,6 +179,8 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 		std::vector<int> saddr = indexToCoord(nDims, dimSize, source->GetId());
 		std::vector<int> daddr = indexToCoord(nDims, dimSize, dest->GetId());
 		std::vector<int> intAddr;
+		intAddr.assign(nDims, 3);
+		NS_LOG_LOGIC("Step from " << vec_to_string(saddr) << " (index " << source->GetId() << ")to " << vec_to_string(daddr) << "(index " << dest->GetId() << ")");
 		int intId;
 		int changedCoord;
 		int outIntID;
@@ -166,6 +189,7 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 			intAddr = correct(daddr, saddr, &changedCoord);
 			intId = coordToIndex(dimSize, intAddr);
 			
+			NS_LOG_LOGIC("Int node on coords: " << vec_to_string(intAddr));
 			Ptr<Node> intNode = NodeList::GetNode(intId);
 			uint32_t numberOfDevices = intNode->GetNDevices ();
 			uint32_t totalNeighbors = 0;
@@ -198,6 +222,9 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 			
 		}
 
+		uint32_t nixVectorSerializedBuffer[10];
+		nixVector->Serialize(nixVectorSerializedBuffer, 10);
+		NS_LOG_LOGIC("Completed nix vector: " + arr_to_string(nixVectorSerializedBuffer, nixVector->GetSerializedSize()/sizeof(uint32_t)));
 		return nixVector;
 		
 	}
@@ -223,7 +250,7 @@ Ipv4NixVectorRouting::indexToCoord(int nDims, int dimSize, int index) const{
 	coords.assign(nDims, 0);
 	
 	for(int i = 0; i < nDims; i++){
-		coords.at(i) = index%(int)pow(dimSize, i);
+		coords.at(i) = (index/(int)pow(dimSize, i))%dimSize;
 	}
 	
 	return coords;

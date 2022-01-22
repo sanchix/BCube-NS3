@@ -283,8 +283,8 @@ private:
   std::vector<int> indexToCoord(int nDims, int dimSize, int index) const;
   std::vector<int> correct(std::vector<int> src, std::vector<int> dst, int *changedCoord) const;
     
-  int nDims;
-  int dimSize;
+  static int nDims;
+  static int dimSize;
   
 };
 } // namespace ns3
