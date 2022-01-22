@@ -5,12 +5,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Llamada");
 
 
-Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio){
+Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio, uint32_t PorcentajeTrafico, bool ControlaTrafico){
 	
 	NS_LOG_FUNCTION("Entramos en el constructor Llamada: ");
 	NS_LOG_FUNCTION("La duracion media de las llamadas será: "<< duracion);
 	NS_LOG_FUNCTION("El máximo tiempo en el que podrá comenzar una llamada: "<< max_t_inicio);
 
+	this.PorcentajeTrafico = PorcentajeTrafico;
+	this.ControlaTrafico = ControlaTrafico;
+	
 	TasaApp = DataRate("32kb/s");
 	TamPack = 92;
 

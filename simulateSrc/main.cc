@@ -52,9 +52,9 @@ int main (int argc, char *argv[]){
 
 	// Configure graphic
 	TitulosGrafica_t titulos;
-	titulos.title = string("Retardo según velocida de enlace");
-	titulos.absTitle = string("Velocida de enlace");
-	titulos.ordTitle = string("Retardo medio");
+	titulos.title = string("Retardo según velocidad de enlace con " + std::string(numIter) + " iteraciones por punto");
+	titulos.absTitle = string("Velocidad de enlace [b/s]");
+	titulos.ordTitle = string("Retardo medio [ms]");
 	strcpy(titulos.curveExpresion, "BCube %0.f");
 	
 	

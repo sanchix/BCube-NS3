@@ -18,7 +18,7 @@ using namespace ns3;
 
 class Llamada {
  public:
- 	Llamada(NodeContainer nodos, double duracion, double max_t_inicio);
+ 	Llamada(NodeContainer nodos, double duracion, double max_t_inicio, uint32_t PorcentajeTrafico, bool ControlaTrafico);
  	void Call(Ptr<Node> nodo_origen);
  	void Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino);
 	Retardo GetObserver();
@@ -37,4 +37,6 @@ class Llamada {
   DataRate TasaApp;
   uint32_t TamPack;
   Retardo obs_ret;
+  uint32_t PorcentajeTrafico;
+  bool ControlaTrafico;
 };     
