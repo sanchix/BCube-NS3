@@ -160,17 +160,17 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 	Ptr<NixVector> nixVector = Create<NixVector>();
 	Ptr<Node> dest = GetNodeByIp(destIp);
 	
-	NS_LOG_LOGIC ("Going from Node " << source->GetId () << " to Node " << dest->GetId () << " on " << nDims << " dims of size " << dimSize << ".");
+	NS_LOG_INFO("Going from Node " << source->GetId () << " to Node " << dest->GetId () << " on " << nDims << " dims of size " << dimSize << ".");
 		
 	if(dest == 0){
 		NS_LOG_ERROR("No routing path exists");
-		NS_LOG_LOGIC("No routing path exists");
+		NS_LOG_INFO("No routing path exists");
 		return 0;
 	}
 	
 	if(source == dest){
 		NS_LOG_DEBUG("Do not process packets to self");
-		NS_LOG_LOGIC("Do not process packets to self");
+		NS_LOG_INFO("Do not process packets to self");
 		return 0;
 	}
 	
@@ -180,16 +180,16 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 		std::vector<int> daddr = indexToCoord(nDims, dimSize, dest->GetId());
 		std::vector<int> intAddr;
 		intAddr.assign(nDims, 3);
-		NS_LOG_LOGIC("Step from " << vec_to_string(saddr) << " (index " << source->GetId() << ")to " << vec_to_string(daddr) << "(index " << dest->GetId() << ")");
 		int intId;
 		int changedCoord;
 		int outIntID;
 		
 		while(saddr != daddr){
+			NS_LOG_INFO("Step from " << vec_to_string(saddr) << " (index " << coordToIndex(dimSize, saddr) << ")to " << vec_to_string(daddr) << "(index " << coordToIndex(dimSize, daddr) << ")");
 			intAddr = correct(daddr, saddr, &changedCoord);
 			intId = coordToIndex(dimSize, intAddr);
 			
-			NS_LOG_LOGIC("Int node on coords: " << vec_to_string(intAddr));
+			NS_LOG_INFO("Int node on coords: " << vec_to_string(intAddr));
 			Ptr<Node> intNode = NodeList::GetNode(intId);
 			uint32_t numberOfDevices = intNode->GetNDevices ();
 			uint32_t totalNeighbors = 0;
@@ -215,16 +215,17 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<Ne
 				}
 				totalNeighbors += netDeviceContainer.GetN ();
 			}
-			NS_LOG_LOGIC ("Adding Nix: " << outIntID << " with " << nixVector->BitCount (totalNeighbors) << " bits, for node " << intNode->GetId ());
+			NS_LOG_INFO("Adding Nix: " << outIntID << " with " << nixVector->BitCount (totalNeighbors) << " bits, for node " << intNode->GetId ());
 			nixVector->AddNeighborIndex (outIntID, nixVector->BitCount (totalNeighbors));
 						
 			daddr = intAddr;
+			dest = NodeList::GetNode(coordToIndex(dimSize, daddr));
 			
 		}
 
 		uint32_t nixVectorSerializedBuffer[10];
 		nixVector->Serialize(nixVectorSerializedBuffer, 10);
-		NS_LOG_LOGIC("Completed nix vector: " + arr_to_string(nixVectorSerializedBuffer, nixVector->GetSerializedSize()/sizeof(uint32_t)));
+		NS_LOG_INFO("Completed nix vector: " + arr_to_string(nixVectorSerializedBuffer, nixVector->GetSerializedSize()/sizeof(uint32_t)));
 		return nixVector;
 		
 	}

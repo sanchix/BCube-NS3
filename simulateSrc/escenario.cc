@@ -32,7 +32,7 @@ double escenario(StageConfig_t *config){
 
 	Simulator::Stop(Seconds(STOPTIME));
 	NS_LOG_INFO("RUN");
-	//Simulator::Run();
+	Simulator::Run();
 	
 	Retardo obs = llamada->GetObserver();
 	NS_LOG_INFO("El retardo medio de las comunicaciones es: "<< obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS)<<"ms");
@@ -69,6 +69,8 @@ void asignaDirecciones(TopologyElements_t &topology, int nDim, int dimSize){
 	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
 	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(1)->GetObject<Ipv4L3Protocol>()->GetAddress(3, 0).GetLocal(),&Outputwrapper,Time::MS);
 	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(1),topology.nodes.Get(3)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
+	IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(3)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(),&Outputwrapper,Time::MS);
 	//IPv4NixVectorRouting.PrintRoutingPath(topology.nodes.Get(0),topology.nodes.Get(2)->GetObject<Ipv4L3Protocol>()->GetAddress(2, 0).GetLocal(),&Outputwrapper,Time::MS);
 	
 	// Trazas
