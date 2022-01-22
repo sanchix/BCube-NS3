@@ -25,6 +25,10 @@ do
 done
 
 
+# Copy NS3 code
+cp ns3/ipv4-nix-vector-routing.* $NS3_PATH/src/nix-vector-routing/model/
+
+
 # Execute
 OLD_WD=$PWD
 cd $NS3_PATH

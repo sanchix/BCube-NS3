@@ -61,6 +61,12 @@ Ipv4NixVectorRouting::~Ipv4NixVectorRouting ()
 }
 
 void
+Ipv4NixVectorRouting::SetBCubeParams(int _nDims, int _dimSize){
+	nDims = _nDims;
+	dimSize = _dimSize;
+}
+
+void
 Ipv4NixVectorRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {
   NS_ASSERT (ipv4 != 0);
@@ -128,7 +134,120 @@ Ipv4NixVectorRouting::FlushIpv4RouteCache (void) const
 }
 
 Ptr<NixVector>
-Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif) const
+Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<NetDevice> oif) const
+{
+	NS_LOG_FUNCTION_NOARGS();
+	
+	Ptr<NixVector> nixVector = Create<NixVector>();
+	Ptr<Node> dest = GetNodeByIp(destIp);
+	
+	NS_LOG_LOGIC ("Going from Node " << source->GetId () << " to Node " << dest->GetId ());
+		
+	if(dest == 0){
+		NS_LOG_ERROR("No routing path exists");
+		return 0;
+	}
+	
+	if(source == dest){
+		NS_LOG_DEBUG("Do not process packets to self");
+		return 0;
+	}
+	
+	else{
+		
+		std::vector<int> saddr = indexToCoord(nDims, dimSize, source->GetId());
+		std::vector<int> daddr = indexToCoord(nDims, dimSize, dest->GetId());
+		std::vector<int> intAddr;
+		int intId;
+		int changedCoord;
+		int outIntID;
+		
+		while(saddr != daddr){
+			intAddr = correct(daddr, saddr, &changedCoord);
+			intId = coordToIndex(dimSize, intAddr);
+			
+			Ptr<Node> intNode = NodeList::GetNode(intId);
+			uint32_t numberOfDevices = intNode->GetNDevices ();
+			uint32_t totalNeighbors = 0;
+			
+			for (uint32_t i = 0; i < numberOfDevices; i++){
+				
+				Ptr<NetDevice> localNetDevice = intNode->GetDevice (i);
+				if (localNetDevice->IsBridge ()){ continue; }
+				Ptr<Channel> channel = localNetDevice->GetChannel ();
+				if (channel == 0){ continue; }
+				
+				NetDeviceContainer netDeviceContainer;
+				GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
+			  
+				uint32_t offset = 0;
+				for (NetDeviceContainer::Iterator iter = netDeviceContainer.Begin (); iter != netDeviceContainer.End (); iter++){
+					
+					Ptr<Node> remoteNode = (*iter)->GetNode ();
+					if (remoteNode->GetId () == dest->GetId()){
+						outIntID = totalNeighbors + offset;
+					}
+					offset += 1;
+				}
+				totalNeighbors += netDeviceContainer.GetN ();
+			}
+			NS_LOG_LOGIC ("Adding Nix: " << outIntID << " with " << nixVector->BitCount (totalNeighbors) << " bits, for node " << intNode->GetId ());
+			nixVector->AddNeighborIndex (outIntID, nixVector->BitCount (totalNeighbors));
+						
+			daddr = intAddr;
+			
+		}
+
+		return nixVector;
+		
+	}
+		
+}
+
+int
+Ipv4NixVectorRouting::coordToIndex(int dimSize, std::vector<int> coords) const{
+	
+	int index = 0;
+	
+	for(std::vector<int>::size_type i = 0; i < coords.size(); i++){
+		index += coords.at(i)*pow(dimSize, i);
+	}
+	
+	return index;
+}
+
+std::vector<int>
+Ipv4NixVectorRouting::indexToCoord(int nDims, int dimSize, int index) const{
+	
+	std::vector<int> coords;
+	coords.assign(nDims, 0);
+	
+	for(int i = 0; i < nDims; i++){
+		coords.at(i) = index%(int)pow(dimSize, i);
+	}
+	
+	return coords;
+}
+
+std::vector<int>
+Ipv4NixVectorRouting::correct(std::vector<int> src, std::vector<int> dst, int *changedCoord) const{
+	
+	std::vector<int> interm = src;
+	
+	for(std::vector<int>::size_type i = 0; i < src.size(); i++){
+		if(src.at(i) != dst.at(i)){
+			interm.at(i) = dst.at(i);
+			*changedCoord = i;
+			break;
+		}
+	}
+	
+	return interm;
+	
+}
+
+Ptr<NixVector>
+Ipv4NixVectorRouting::GetNixVectorOld (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif) const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -158,7 +277,7 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetD
       // and build the nix vector
       std::vector< Ptr<Node> > parentVector;
 
-      BFS (NodeList::GetNNodes (), source, destNode, parentVector, oif);
+      BFS (NodeList::GetNNodes(), source, destNode, parentVector, oif);
 
       if (BuildNixVector (parentVector, source->GetId (), destNode->GetId (), nixVector))
         {

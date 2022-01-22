@@ -98,6 +98,9 @@ public:
    */
   void PrintRoutingPath (Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit) const;
 
+  void SetBCubeParams(int _nDims, int _dimSize);
+  
+  
 
 private:
 
@@ -130,7 +133,7 @@ private:
    * \param oif Preferred output interface
    * \returns The NixVector to be used in routing.
    */
-  Ptr<NixVector> GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif) const;
+  Ptr<NixVector> GetNixVectorOld (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif) const;
 
   /**
    * Checks the cache based on dest IP for the nix-vector
@@ -274,6 +277,15 @@ private:
    **/
   typedef std::unordered_map<Ipv4Address, ns3::Ptr<ns3::Node>, Ipv4AddressHash > Ipv4AddressToNodeMap;
   static Ipv4AddressToNodeMap g_ipv4AddressToNodeMap; //!< Address to node map.
+  
+  Ptr<NixVector> GetNixVector (Ptr<Node> source, Ipv4Address destIp, Ptr<NetDevice> oif) const;
+  int coordToIndex(int dimSize, std::vector<int> coords) const;
+  std::vector<int> indexToCoord(int nDims, int dimSize, int index) const;
+  std::vector<int> correct(std::vector<int> src, std::vector<int> dst, int *changedCoord) const;
+    
+  int nDims;
+  int dimSize;
+  
 };
 } // namespace ns3
 

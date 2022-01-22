@@ -1,0 +1,2 @@
+Time: +0ms, Nix Routing
+Route Path: (Node 0 to Node 1, Nix Vector: 00000000000000000000000000000000)

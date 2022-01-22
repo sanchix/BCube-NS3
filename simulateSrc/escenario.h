@@ -43,7 +43,7 @@ double escenario(StageConfig_t *config);
 
 void topologiaFisica(int bCubeLevel, int dimSize, TopologyElements_t &topology, PuenteConfig_t *puenteConfig);
 
-void asignaDirecciones(TopologyElements_t &elements);
+void asignaDirecciones(TopologyElements_t &topology, int nDim, int dimSize);
 
 int coordToIndex(int dimSize, int dim, int coord);
 

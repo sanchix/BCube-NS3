@@ -21,7 +21,7 @@ int main (int argc, char *argv[]){
 	CommandLine cmd;
 	
 	int porcentajeConzianza = 95;
-	int numIter = 2;
+	int numIter = 1;
 	int bCubeLevel = 0;    // Comproar si está entre 0 y 3
 	int nNodos = 4;
 	int regBinarioPuentes = 100000;
