@@ -33,7 +33,7 @@ public:
   void     RxEnd (Ptr<const Packet> paquete);
   void 	   NewCall (Ptr<OnOffApplication> emisor);
   Time     RetardoMedio   ();
-  double	   PorcentajePerdidaPaqs();
+  double   PorcentajePerdidaPaqs();
 
 private:
   Time      average;

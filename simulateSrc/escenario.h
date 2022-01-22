@@ -26,6 +26,7 @@
 
 using namespace ns3;
 
+enum ret_t{delay, perdidas};
 
 typedef struct{
 	int bCubeLevel;
@@ -33,6 +34,7 @@ typedef struct{
 	PuenteConfig_t puenteConfig;
 	bool ControlaTrafico;
 	uint32_t PorcentajeTrafico;
+	ret_t ret = delay;
 } StageConfig_t;
 
 typedef struct{
