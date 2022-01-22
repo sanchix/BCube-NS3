@@ -91,6 +91,9 @@ double ParamRange<T>::CurrentDouble(){
 	else if(std::is_same<T, int>::value){
 		result = (double)*(int *)_param;
 	}
+	else if(std::is_same<T, uint32_t>::value){
+		result = (double)*(uint32_t *)_param;
+	}
 	else if(std::is_same<T, DataRate>::value){
 		DataRate *aux = (DataRate *)_param;
 		result = aux->GetBitRate();
@@ -104,4 +107,5 @@ double ParamRange<T>::CurrentDouble(){
 template class ParamRange<Time>;
 template class ParamRange<double>;
 template class ParamRange<int>;
+template class ParamRange<uint32_t>;
 template class ParamRange<DataRate>;
