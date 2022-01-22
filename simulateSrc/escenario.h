@@ -31,6 +31,8 @@ typedef struct{
 	int bCubeLevel;
 	int nNodos;
 	PuenteConfig_t puenteConfig;
+	bool ControlaTrafico;
+	uint32_t PorcentajeTrafico;
 } StageConfig_t;
 
 typedef struct{

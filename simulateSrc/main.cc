@@ -26,6 +26,8 @@ int main (int argc, char *argv[]){
 	int nNodos = 64;
 	int regBinarioPuentes = 100000;
 	Time delay("20us");
+	bool ControlaTrafico = true;
+	uint32_t PorcentajeTrafico = 30;
 	
 	cmd.AddValue("numIter", "Número de iteraciones para la simulación: ", numIter);
 	cmd.AddValue("nNodos", "Número total de equipos: ", nNodos);
@@ -43,23 +45,26 @@ int main (int argc, char *argv[]){
 	stageConfig.nNodos = nNodos;
 	stageConfig.puenteConfig.regimenBinario = DataRate(regBinarioPuentes);
 	stageConfig.puenteConfig.delay = delay;
+	stageConfig.ControlaTrafico = ControlaTrafico;
+	stageConfig.PorcentajeTrafico = PorcentajeTrafico;
 	
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, 3);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
 	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, 0);
 	regBinarioPuentesParam.SetGeometricProgressionRate(2);
-
+	ParamRange<uint32_t> MaxTraficoParam(&stageConfig.PorcentajeTrafico, PROGRESSION_ARITMETIC, 3);
+	MaxTraficoParam.SetAritmeticProgressionRate(10);
 
 	// Configure graphic
 	TitulosGrafica_t titulos;
-	titulos.title = string("Retardo según velocidad de enlace con " + std::to_string(numIter) + " iteraciones por punto");
-	titulos.absTitle = string("Velocidad de enlace [b/s]");
-	titulos.ordTitle = string("Retardo medio [ms]");
+	titulos.title = string("Paquetes Perdidos segun el Maximo Porcentaje de Trafico, con " + std::to_string(numIter) + " iteraciones por punto");
+	titulos.absTitle = string("Maximo Porcentaje de Trafico  [%]");
+	titulos.ordTitle = string("Paquetes Perdidos [%]");
 	strcpy(titulos.curveExpresion, "BCube %0.f");
 	
 	
 	// Simulate
-	Gnuplot grafiquita = grafica<StageConfig_t, int, DataRate>(&stageConfig, titulos, bCubeLevelParam, regBinarioPuentesParam, numIter, porcentajeConzianza, escenario);	
+	Gnuplot grafiquita = grafica<StageConfig_t, int, DataRate>(&stageConfig, titulos, bCubeLevelParam, MaxTraficoParam, numIter, porcentajeConzianza, escenario);	
 	
 	std::ofstream fichero ("Trabajo.plt");
 	grafiquita.GenerateOutput (fichero);

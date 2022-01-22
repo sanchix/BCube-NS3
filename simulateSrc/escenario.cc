@@ -24,7 +24,7 @@ double escenario(StageConfig_t *config){
 	NS_LOG_DEBUG("El numero de equipos es: "<< topology.nodes.GetN());
 
 	asignaDirecciones(topology, config->bCubeLevel+1, nNodosDim);
-	Llamada *llamada = generaTrafico(topology.nodes);
+	Llamada *llamada = generaTrafico(topology.nodes,config->ControlaTrafico,config->PorcentajeTrafico);
 	llamada = llamada;
 
 	//AppOnOff Obs_OnOff = llamada->GetObserver();
