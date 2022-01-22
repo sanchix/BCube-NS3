@@ -10,6 +10,10 @@ Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio, bool
 	NS_LOG_FUNCTION("Entramos en el constructor Llamada: ");
 	NS_LOG_FUNCTION("La duracion media de las llamadas será: "<< duracion);
 	NS_LOG_FUNCTION("El máximo tiempo en el que podrá comenzar una llamada: "<< max_t_inicio);
+	
+	if (ControlaTrafico){
+		NS_LOG_FUNCTION("El PorcentajeTrafico maximo será: "<< PorcentajeTrafico<<"%");		
+	}
 
 	this->PorcentajeTrafico = PorcentajeTrafico;
 	this->ControlaTrafico = ControlaTrafico;
@@ -161,10 +165,13 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 
 void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 
+	nNodesInCall -= 2;
     uint32_t id_destino = nodo_destino->GetId();
     uint32_t id_origen = nodo_origen->GetId();
     NS_LOG_FUNCTION("HANG - El id del nodo llamante: "<< id_origen);
     NS_LOG_FUNCTION("HANG - El id del nodo llamado: "<< id_destino);
+    NS_LOG_FUNCTION("HANG - El porcentaje de trafico actual: "<< 100*nNodesInCall/TodosNodos.GetN());
+
 
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
@@ -180,9 +187,6 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
     	Simulator::Schedule(t_inicio, &Llamada::Call,this, nodo_origen);
 	}
 
-    //delete GetPointer(nodo_destino->GetApplication(1));
-	//delete GetPointer(nodo_origen->GetApplication(1));
-	
     // Nueva llamada del destino (si la quiere)
     if(nodeCalledList->at(id_destino) == IMPACIENTE){
 		NS_LOG_INFO("Era impaciente");
@@ -190,7 +194,6 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
     }
 	nodeCalledList->at(id_destino) = LIBRE;
 	
-	nNodesInCall -= 2;
 }
 
 Retardo Llamada::GetObserver(){
