@@ -5,15 +5,15 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Llamada");
 
 
-Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio, uint32_t PorcentajeTrafico, bool ControlaTrafico){
+Llamada::Llamada(NodeContainer nodos, double duracion, double max_t_inicio, bool ControlaTrafico, uint32_t PorcentajeTrafico){
 	
 	NS_LOG_FUNCTION("Entramos en el constructor Llamada: ");
 	NS_LOG_FUNCTION("La duracion media de las llamadas será: "<< duracion);
 	NS_LOG_FUNCTION("El máximo tiempo en el que podrá comenzar una llamada: "<< max_t_inicio);
 
-	this.PorcentajeTrafico = PorcentajeTrafico;
-	this.ControlaTrafico = ControlaTrafico;
-	
+	this->PorcentajeTrafico = PorcentajeTrafico;
+	this->ControlaTrafico = ControlaTrafico;
+
 	TasaApp = DataRate("32kb/s");
 	TamPack = 92;
 
@@ -125,38 +125,34 @@ void Llamada::Call(Ptr<Node> nodo_origen){
 		nNodesInCall += 2;
 		
 		// CREAR APLICACIONES FUENTES
-		NodeContainer Nodo_Origen;
-		NodeContainer Nodo_Destino;
-
-		Nodo_Origen.Add(nodo_origen);
-		Nodo_Destino.Add(TodosNodos.Get(id_destino));
-
-		ApplicationContainer App_Nodo_Origen;
-		ApplicationContainer App_Nodo_Destino;
+		Ptr<Node> nodo_destino = TodosNodos.Get(id_destino);
 		
 		Time t_fin = Seconds(Exp_duracion->GetValue());
 		NS_LOG_DEBUG("El tiempo de finalizacíon de la llamada es :" << t_fin);
 
-		OnOffHelper H_ClientOnOff_origen ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Destino.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
+		Ptr<OnOffApplication> AppOrigen = CreateObject<OnOffApplication>();
+		AppOrigen->SetAttribute("OnTime",PointerValue(Exp_ON));
+		AppOrigen->SetAttribute("OffTime",PointerValue(Exp_OFF));
+		AppOrigen->SetAttribute("PacketSize",UintegerValue(TamPack));
+		AppOrigen->SetAttribute("DataRate",DataRateValue(TasaApp));
+		AppOrigen->SetAttribute("Remote",AddressValue(InetSocketAddress(nodo_destino->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO)));
+		AppOrigen->SetAttribute("StopTime",TimeValue(Simulator::Now()+t_fin));
+		nodo_origen->AddApplication(AppOrigen);
 
-		H_ClientOnOff_origen.SetConstantRate(TasaApp,TamPack);		
-		H_ClientOnOff_origen.SetAttribute("OnTime",PointerValue(Exp_ON));
-		H_ClientOnOff_origen.SetAttribute("OffTime",PointerValue(Exp_OFF));
-		H_ClientOnOff_origen.SetAttribute("StopTime",TimeValue(Simulator::Now()+t_fin));
-		App_Nodo_Origen=H_ClientOnOff_origen.Install (Nodo_Origen);
-		
-		OnOffHelper H_ClientOnOff_destino ("ns3::UdpSocketFactory",InetSocketAddress(Nodo_Origen.Get(0)->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO));
-		H_ClientOnOff_destino.SetConstantRate(TasaApp,TamPack);
-		H_ClientOnOff_destino.SetAttribute("OnTime",PointerValue(Exp_ON));
-		H_ClientOnOff_destino.SetAttribute("OffTime",PointerValue(Exp_OFF));
-		H_ClientOnOff_origen.SetAttribute("StopTime",TimeValue(Simulator::Now()+t_fin));
-		App_Nodo_Destino=H_ClientOnOff_destino.Install (Nodo_Destino);
-		
+		Ptr<OnOffApplication> AppDestino = CreateObject<OnOffApplication>();
+		AppDestino->SetAttribute("OnTime",PointerValue(Exp_ON));
+		AppDestino->SetAttribute("OffTime",PointerValue(Exp_OFF));
+		AppDestino->SetAttribute("PacketSize",UintegerValue(TamPack));
+		AppDestino->SetAttribute("DataRate",DataRateValue(TasaApp));
+		AppDestino->SetAttribute("Remote",AddressValue(InetSocketAddress(nodo_origen->GetObject<Ipv4L3Protocol>()->GetAddress(1, 0).GetLocal(), PUERTO)));
+		AppDestino->SetAttribute("StopTime",TimeValue(Simulator::Now()+t_fin));
+		nodo_destino->AddApplication(AppDestino);
+
 		//Se añaden las aplicaciones al observer
-		obs_ret.NewCall(App_Nodo_Destino.Get(0)->GetObject<OnOffApplication>());
-		obs_ret.NewCall(App_Nodo_Origen.Get(0)->GetObject<OnOffApplication>());
+		obs_ret.NewCall(AppOrigen->GetObject<OnOffApplication>());
+		obs_ret.NewCall(AppDestino->GetObject<OnOffApplication>());
 		
-		Simulator::Schedule(t_fin, &Llamada::Hang,this, Nodo_Origen.Get(0), Nodo_Destino.Get(0));
+		Simulator::Schedule(t_fin, &Llamada::Hang,this, nodo_origen, nodo_destino);
         
     }
 	
@@ -172,9 +168,18 @@ void Llamada::Hang(Ptr<Node> nodo_origen,Ptr<Node> nodo_destino){
 
     // Nueva llamada del origen
     nodeCalledList->at(id_origen) = LIBRE;
-    Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
-    Simulator::Schedule(t_inicio, &Llamada::Call,this, nodo_origen);
-	
+
+    if((ControlaTrafico==true) && (100*nNodesInCall/TodosNodos.GetN() < PorcentajeTrafico)){
+
+    	Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
+    	Simulator::Schedule(t_inicio, &Llamada::Call,this, nodo_origen);
+    }
+    else if(ControlaTrafico==false){
+
+		Time t_inicio = Seconds(int64x64_t(Uniform_t_inicio->GetInteger()));
+    	Simulator::Schedule(t_inicio, &Llamada::Call,this, nodo_origen);
+	}
+
     //delete GetPointer(nodo_destino->GetApplication(1));
 	//delete GetPointer(nodo_origen->GetApplication(1));
 	
