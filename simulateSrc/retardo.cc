@@ -76,5 +76,10 @@ Retardo::RetardoMedio ()
 double
 Retardo::PorcentajePerdidaPaqs()
 {
-	return (enviados - m_cuenta)*100/enviados;	
+	int diff = enviados - m_cuenta;
+	double porcent = (double)diff/enviados;
+	porcent = porcent*100;
+	NS_LOG_DEBUG("Calculando % pedPaq, enviados: "<<enviados<<", recibidos: "<<m_cuenta<<" "<<diff<<" "<<porcent);
+	
+	return porcent;	
 }

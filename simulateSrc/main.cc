@@ -17,14 +17,14 @@ typedef struct{
 	int porcentajeConzianza = 95;
 	int numIter = 4;
 	int bCubeLevelIni = 0;    // Comproar si está entre 0 y 3
-	int numBCubeLevels = 4;
-	int nNodos = 4;
+	int numBCubeLevels = 3;
+	int nNodos = 64;
 	Time delay;
-	int regBinarioPuentes = 10000;
+	int regBinarioPuentes = 100000;
 	double coefRB = 1.5;
 	int numRB = 10;
 	uint32_t porcentajeTrafico = 30;
-	uint32_t coefT = 10;
+	uint32_t coefT = 5;
 	int numT = 10;
 } AFP_t;
 
