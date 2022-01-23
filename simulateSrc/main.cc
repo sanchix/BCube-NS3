@@ -15,16 +15,16 @@ NS_LOG_COMPONENT_DEFINE ("Main");
 
 typedef struct{
 	int porcentajeConzianza = 95;
-	int numIter = 2;
+	int numIter = 12;
 	int bCubeLevelIni = 0;    // Comproar si está entre 0 y 3
 	int numBCubeLevels = 3;
 	int nNodos = 64;
 	Time delay;
 	int regBinarioPuentes = 100000;
 	double coefRB = 1.5;
-	int numRB = 3;
+	int numRB = 10;
 	uint32_t porcentajeTrafico = 30;
-	uint32_t coefT = 5;
+	uint32_t coefT = 6;
 	int numT = 10;
 
 } AFP_t;
@@ -93,7 +93,7 @@ void symRetXVel(AFP_t *params){
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, params->numBCubeLevels-1);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
 	ParamRange<DataRate> regBinarioPuentesParam(&stageConfig.puenteConfig.regimenBinario, PROGRESSION_GEOMETRIC, params->numRB-1);
-	regBinarioPuentesParam.SetGeometricProgressionRate(params->coefRB-1);
+	regBinarioPuentesParam.SetGeometricProgressionRate(params->coefRB);
 
 	// Configure graphic
 	TitulosGrafica_t titulos;
@@ -120,7 +120,8 @@ void symPerXTra(AFP_t *params){
 	StageConfig_t stageConfig;
 	stageConfig.bCubeLevel = params->bCubeLevelIni;
 	stageConfig.nNodos = params->nNodos;
-	stageConfig.puenteConfig.regimenBinario = DataRate(params->regBinarioPuentes);
+	//stageConfig.puenteConfig.regimenBinario = DataRate(params->regBinarioPuentes);
+	stageConfig.puenteConfig.regimenBinario = DataRate("50kbps");
 	stageConfig.puenteConfig.delay = params->delay;
 	stageConfig.PorcentajeTrafico = params->porcentajeTrafico;
 	stageConfig.ControlaTrafico = ControlaTrafico;
@@ -129,7 +130,7 @@ void symPerXTra(AFP_t *params){
 	ParamRange<int> bCubeLevelParam(&stageConfig.bCubeLevel, PROGRESSION_ARITMETIC, params->numBCubeLevels-1);
 	bCubeLevelParam.SetAritmeticProgressionRate(1);
 	ParamRange<uint32_t> MaxTraficoParam(&stageConfig.PorcentajeTrafico, PROGRESSION_ARITMETIC, params->numT-1);
-	MaxTraficoParam.SetAritmeticProgressionRate(params->coefT-1);
+	MaxTraficoParam.SetAritmeticProgressionRate(params->coefT);
 
 	// Configure graphic
 	TitulosGrafica_t titulos;
