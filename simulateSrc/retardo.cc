@@ -70,6 +70,10 @@ Retardo::RetardoMedio ()
   if (m_cuenta == 0){
     m_cuenta=1;
   }
+  NS_LOG_LOGIC("El retardo medio es :"<< average/m_cuenta);
+  NS_LOG_LOGIC("La suma de retardos es  :"<< average);
+  NS_LOG_LOGIC("El numero de muestras es :"<< m_cuenta);
+
   return average/m_cuenta;
 }
 

@@ -24,13 +24,9 @@ typedef struct{
 	double coefRB = 1.5;
 	int numRB = 3;
 	uint32_t porcentajeTrafico = 30;
-<<<<<<< HEAD
 	uint32_t coefT = 5;
 	int numT = 10;
-=======
-	uint32_t coefT = 4;
-	int numT = 3;
->>>>>>> cddf41d2e795a6518ca6db2a8b22c9bf07afbab1
+
 } AFP_t;
 
 void symRetXVel(AFP_t *config);
