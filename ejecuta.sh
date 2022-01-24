@@ -1,6 +1,7 @@
 #!/bin/bash
 
-read -p "¡AVISO, este script MODIFICA ficheros del CODIGO FUENTE DE NS3! ¿Quiere continuar? [Y/N]: "
+printf "¡AVISO, este script MODIFICA ficheros del CODIGO FUENTE DE NS3!\nAsegúrese de haber configurado las variables del fichero de texto \"myLocalPaths\":\n\t> NS3_PATH: Ruta hasta la carpeta de NS3 que contiene el fichero waf, los directorios src, scratch, ...\n\t> SCRATCH_SUBDIR_NAME: Nombre del subdirectorio donde se almacenará el código dentro de la carpeta scratch de NS3 (vale con utilizar cualquier nombre que no tenga asociado un subdirectorio en dicha carpeta)\n¿Quiere continuar? [Y/N]: "
+read
 if [[ $REPLY != "Y" ]]
 then
 	ex it 1
@@ -9,6 +10,7 @@ fi
 
 #Init variables
 . myLocalPaths
+CODE_PATHS="./lib/myPsrLib ./simulateSrc"
 
 FULL_SCRATCH_PATH="$NS3_PATH/scratch/$SCRATCH_SUBDIR_NAME"
 
@@ -29,12 +31,12 @@ do
 	echo Copying code from $CODE_PATH
 	cp $CODE_PATH/*.h $FULL_SCRATCH_PATH
 	cp $CODE_PATH/*.cc $FULL_SCRATCH_PATH
-	cp ./ns3/onoff-application.cc /opt/salas/ns-3.34/src/applications/model/
 done
 
 
 # Copy NS3 code
-cp ns3/ipv4-nix-vector-routing.* $NS3_PATH/src/nix-vector-routing/model/
+cp ./ns3/ipv4-nix-vector-routing.* $NS3_PATH/src/nix-vector-routing/model/
+cp ./ns3/onoff-application.cc $NS3_PATH/src/applications/model/
 
 
 # Execute
