@@ -43,10 +43,10 @@ double escenario(StageConfig_t *config){
 	}
 	//NS_LOG_DEBUG ("El observador nos da este ultimo tiempo: " << Obs_OnOff.getTUltPaq());
 	NS_LOG_INFO("Porcentaje de paquetes pedidos: " << obs.PorcentajePerdidaPaqs());
-	if(config->ret == delay){
+	if(config->ret == perdidas){
 		returnValue = obs.PorcentajePerdidaPaqs();
 	}
-	else if(config->ret == perdidas){
+	else if(config->ret == delay){
 		returnValue = obs.RetardoMedio().ToDouble(ns3::Time::Unit::MS);;
 	}
 	return returnValue;

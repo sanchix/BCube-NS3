@@ -70,11 +70,20 @@ Retardo::RetardoMedio ()
   if (m_cuenta == 0){
     m_cuenta=1;
   }
+  NS_LOG_LOGIC("El retardo medio es :"<< average/m_cuenta);
+  NS_LOG_LOGIC("La suma de retardos es  :"<< average);
+  NS_LOG_LOGIC("El numero de muestras es :"<< m_cuenta);
+
   return average/m_cuenta;
 }
 
 double
 Retardo::PorcentajePerdidaPaqs()
 {
-	return (enviados - m_cuenta)*100/enviados;	
+	int diff = enviados - m_cuenta;
+	double porcent = (double)diff/enviados;
+	porcent = porcent*100;
+	NS_LOG_DEBUG("Calculando % pedPaq, enviados: "<<enviados<<", recibidos: "<<m_cuenta<<" "<<diff<<" "<<porcent);
+	
+	return porcent;	
 }
