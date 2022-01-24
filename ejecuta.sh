@@ -1,9 +1,17 @@
 #!/bin/bash
 
+read -p "¡AVISO, este script MODIFICA ficheros del CODIGO FUENTE DE NS3! ¿Quiere continuar? [Y/N]: "
+if [[ $REPLY != "Y" ]]
+then
+	ex it 1
+fi
+
+
 #Init variables
 . myLocalPaths
 
 FULL_SCRATCH_PATH="$NS3_PATH/scratch/$SCRATCH_SUBDIR_NAME"
+
 
 # Create and prepare ns3 folders
 if [[ ! -d $FULL_SCRATCH_PATH ]]
