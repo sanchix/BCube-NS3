@@ -1,6 +1,6 @@
 #!/bin/bash
 
-printf "¡AVISO, este script MODIFICA ficheros del CODIGO FUENTE DE NS3!\nAsegúrese de haber configurado las variables del fichero de texto \"myLocalPaths\":\n\t> NS3_PATH: Ruta hasta la carpeta de NS3 que contiene el fichero waf, los directorios src, scratch, ...\n\t> SCRATCH_SUBDIR_NAME: Nombre del subdirectorio donde se almacenará el código dentro de la carpeta scratch de NS3 (vale con utilizar cualquier nombre que no tenga asociado un subdirectorio en dicha carpeta)\n¿Quiere continuar? [Y/N]: "
+printf "¡AVISO, este script MODIFICA ficheros del CODIGO FUENTE DE NS3! (aunque si se deja que termine la ejecución se restaura el estado original de los ficheros)\nAsegúrese de haber configurado las variables del fichero de texto \"myLocalPaths\":\n\t> NS3_PATH: Ruta hasta la carpeta de NS3 que contiene el fichero waf, los directorios src, scratch, ...\n\t> SCRATCH_SUBDIR_NAME: Nombre del subdirectorio donde se almacenará el código dentro de la carpeta scratch de NS3 (vale con utilizar cualquier nombre que no tenga asociado un subdirectorio en dicha carpeta)\n¿Quiere continuar? [Y/N]: "
 read
 if [[ $REPLY != "Y" ]]
 then
@@ -35,6 +35,9 @@ done
 
 
 # Copy NS3 code
+mv $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.cc $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.cc.bck
+mv $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.h $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.h.bck
+mv $NS3_PATH/src/applications/model/onoff-application.cc $NS3_PATH/src/applications/model/onoff-application.cc.bck
 cp ./ns3/ipv4-nix-vector-routing.* $NS3_PATH/src/nix-vector-routing/model/
 cp ./ns3/onoff-application.cc $NS3_PATH/src/applications/model/
 
@@ -53,3 +56,9 @@ else
 fi
 
 mv *.plt $OLD_WD
+
+
+# Restore NS3 files
+mv $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.cc.bck $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.cc
+mv $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.h.bck $NS3_PATH/src/nix-vector-routing/model/ipv4-nix-vector-routing.h
+mv $NS3_PATH/src/applications/model/onoff-application.cc.bck $NS3_PATH/src/applications/model/onoff-application.cc
