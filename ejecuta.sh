@@ -4,7 +4,7 @@ printf "¡AVISO, este script MODIFICA ficheros del CODIGO FUENTE DE NS3!\nAsegú
 read
 if [[ $REPLY != "Y" ]]
 then
-	ex it 1
+	exit 1
 fi
 
 
